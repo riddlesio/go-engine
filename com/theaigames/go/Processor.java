@@ -15,7 +15,7 @@
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 
-package com.theaigames.tictactoe;
+package com.theaigames.go;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +24,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.theaigames.game.player.AbstractPlayer;
-import com.theaigames.tictactoe.field.Field;
-import com.theaigames.tictactoe.moves.Move;
-import com.theaigames.tictactoe.moves.MoveResult;
-import com.theaigames.tictactoe.player.Player;
 import com.theaigames.game.GameHandler;
+import com.theaigames.go.field.Field;
+import com.theaigames.go.moves.Move;
+import com.theaigames.go.moves.MoveResult;
+import com.theaigames.go.player.Player;
 
 public class Processor implements GameHandler {
 	

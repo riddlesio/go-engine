@@ -1,4 +1,4 @@
-package com.theaigames.tictactoe;
+package com.theaigames.go;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import com.theaigames.engine.io.IOPlayer;
 import com.theaigames.game.AbstractGame;
 import com.theaigames.game.player.AbstractPlayer;
-import com.theaigames.tictactoe.field.Field;
-import com.theaigames.tictactoe.player.Player;
+import com.theaigames.go.field.Field;
+import com.theaigames.go.player.Player;
 
-public class Tictactoe extends AbstractGame {
+public class Go extends AbstractGame {
 	
 	private final int TIMEBANK_MAX = 10000;
 	private final int TIME_PER_MOVE = 500;
@@ -57,7 +57,7 @@ public class Tictactoe extends AbstractGame {
 	}
 	
 	public static void main(String args[]) throws Exception {
-		Tictactoe game = new Tictactoe();
+		Go game = new Go();
 		game.TEST_BOT = "java -cp /home/joost/workspace/TTTBot1/bin/ bot.BotStarter";
 		game.NUM_TEST_BOTS = 2;
 		game.setupEngine(args);

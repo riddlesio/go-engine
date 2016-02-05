@@ -1,7 +1,7 @@
-package com.theaigames.tictactoe.moves;
+package com.theaigames.go.moves;
 
-import com.theaigames.tictactoe.field.Field;
-import com.theaigames.tictactoe.player.Player;
+import com.theaigames.go.field.Field;
+import com.theaigames.go.player.Player;
 
 public class MoveResult {
 	private String mOldFieldPresentationString, mNewFieldPresentationString;

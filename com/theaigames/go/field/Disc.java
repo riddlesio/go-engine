@@ -1,4 +1,4 @@
-package com.theaigames.tictactoe.field;
+package com.theaigames.go.field;
 
 public class Disc {
 
