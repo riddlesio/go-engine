@@ -56,7 +56,6 @@ public class Processor implements GameHandler {
 				player.sendUpdate("round", roundNumber);
 				player.sendUpdate("move", mMoveNumber);
 				player.sendUpdate("field", mField.toString());
-				player.sendUpdate("macroboard", mField.macroboardToString());
 				String response = player.requestMove("move");
 				if (!parseResponse(response, player)) {
 					response = player.requestMove("move");
@@ -76,14 +75,14 @@ public class Processor implements GameHandler {
 	 */
 	private Boolean parseResponse(String r, Player player) {
 		String[] parts = r.split(" ");
-		String oldFieldPresentationString = mField.toPresentationString(player.getId(), true);
+		String s = mField.toString();
 		if (parts[0].equals("place_move")) {
 		    try {
     			int column = (int) Double.parseDouble(parts[1]);
     			int row = (int) Double.parseDouble(parts[2]);
     			
     			if (mField.addMove(column, row, player.getId())) {
-                    recordMove(player, oldFieldPresentationString);
+                    recordMove(player, s);
                     return true;
                 } else {
                     player.getBot().outputEngineWarning(mField.getLastError());
@@ -94,7 +93,7 @@ public class Processor implements GameHandler {
 		} else {
 		    createParseError(player, r);
 		}
-		recordMove(player, oldFieldPresentationString);
+		recordMove(player, s);
 		return false;
 	}
 	
@@ -109,7 +108,7 @@ public class Processor implements GameHandler {
 		move.setIllegalMove(mField.getLastError());
 		mMoves.add(move);
 		
-		MoveResult moveResult = new MoveResult(player, move, oldFieldPresentationString, mField);
+		MoveResult moveResult = new MoveResult(player, move, mField);
 		moveResult.setMoveNumber(mMoveNumber);
 		mMoveResults.add(moveResult);
 	}
@@ -171,21 +170,13 @@ public class Processor implements GameHandler {
 			
 			for (MoveResult move : mMoveResults) {
 
-				JSONObject state1 = new JSONObject();
-				state1.put("field", move.getOldFieldPresentationString());
-				state1.put("move", move.getMoveNumber());
-				state1.put("winner", "");
-				state1.put("player", move.getPlayer().getId());
-				state1.put("illegalMove", "");
-				states.put(state1);
-				
-				JSONObject state2 = new JSONObject();
-				state2.put("field", move.getNewFieldPresentationString());
-				state2.put("move", move.getMoveNumber());
-				state2.put("winner", "");
-				state2.put("player", move.getPlayer().getId());
-				state2.put("illegalMove", move.getMove().getIllegalMove());
-				states.put(state2);
+				JSONObject state = new JSONObject();
+				state.put("field", move.toString());
+				state.put("move", move.getMoveNumber());
+				state.put("winner", "");
+				state.put("player", move.getPlayer().getId());
+				state.put("illegalMove", "");
+				states.put(state);
 				
 				if (counter == mMoveResults.size()-1) { // final overlay state with winner
 				    String winnerstring = "";
@@ -195,14 +186,13 @@ public class Processor implements GameHandler {
                         winnerstring = winner.getName();
                     }
                     JSONObject state3 = new JSONObject();
-                    state3.put("field", move.getNewFieldPresentationString());
+                    state3.put("field", move.toString());
                     state3.put("move", move.getMoveNumber());
                     state3.put("winner", winnerstring);
                     state3.put("player", move.getPlayer().getId());
                     state3.put("illegalMove", move.getMove().getIllegalMove());
                     states.put(state3);
                 }
-				
 				counter++;
 			}
 			output.put("states", states);

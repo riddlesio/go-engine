@@ -4,26 +4,19 @@ import com.theaigames.go.field.Field;
 import com.theaigames.go.player.Player;
 
 public class MoveResult {
-	private String mOldFieldPresentationString, mNewFieldPresentationString;
 	private int mMoveNumber = 0;
 	private Player mPlayer;
 	private Move mMove;
+	private Field mField;
+	private String mString;
 
-	public MoveResult(Player player, Move move, String oldFieldPresentationString, Field newField) {
-	    mPlayer = player;
-	    mMove = move;
-	    mOldFieldPresentationString = oldFieldPresentationString;
-	    mNewFieldPresentationString = newField.toPresentationString(mPlayer.getId(), false);
+	public MoveResult(Player player, Move move, Field field) {
+		mPlayer = player;
+		mMove = move;
+		mField = field;
+		mString = field.toString();
 	}
 	
-	public String getOldFieldPresentationString() {
-	    return mOldFieldPresentationString;
-	}
-	
-	public String getNewFieldPresentationString() {
-        return mNewFieldPresentationString;
-    }
-
 	public Player getPlayer() {
 		return mPlayer;
 	}
@@ -38,5 +31,9 @@ public class MoveResult {
 	
 	public int getMoveNumber() {
 		return mMoveNumber;
+	}
+	
+	public String toString() {
+	    return mString;
 	}
 }
