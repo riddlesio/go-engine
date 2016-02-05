@@ -4,12 +4,10 @@ import com.theaigames.util.Util;
 
 public class Field {
 	private int[][] mBoard;
-	private int[][] mMacroboard;
 
 	private int mCols = 0, mRows = 0;
 	private String mLastError = "";
 	private int mLastX = -1, mLastY = -1;
-	private Boolean mAllMicroboardsActive = true;
 	
 	public Field() {
 		mCols = 19;
