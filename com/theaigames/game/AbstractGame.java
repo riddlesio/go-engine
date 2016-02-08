@@ -52,7 +52,7 @@ public abstract class AbstractGame implements Logic {
 	
 	public int maxRounds;
 	
-	public boolean DEV_MODE = !false; // turn this on for local testing
+	public final static boolean DEV_MODE = !false; // turn this on for local testing
 	public String TEST_BOT; // command for the test bot in DEV_MODE
 	public int NUM_TEST_BOTS; // number of bots for this game
 	
