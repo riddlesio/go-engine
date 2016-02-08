@@ -48,7 +48,7 @@ public class Processor implements GameHandler {
 		mMoveResults = new ArrayList<MoveResult>();
 		if (AbstractGame.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
-			dbgTestKoRule();
+			dbgTestCapture();
 			
 		}
 		
@@ -56,19 +56,60 @@ public class Processor implements GameHandler {
 	
 	private void dbgTestKoRule() {
 		mField.addMove(2, 0, 1);
+		recordMove(mPlayers.get(0), mField.toString());
 		mField.addMove(1, 1, 1);
+		recordMove(mPlayers.get(0), mField.toString());
 		mField.addMove(2, 2, 1);
+		recordMove(mPlayers.get(0), mField.toString());
 		
 		mField.addMove(3, 0, 2);
+		recordMove(mPlayers.get(1), mField.toString());
 		mField.addMove(2, 1, 2);
+		recordMove(mPlayers.get(1), mField.toString());
 		mField.addMove(3, 2, 2);
+		recordMove(mPlayers.get(1), mField.toString());
 		mField.addMove(4, 1, 2);
+		recordMove(mPlayers.get(1), mField.toString());
 		
 		System.out.println(mField.getLastError());
 		mField.addMove(3, 1, 1);
 		System.out.println(mField.getLastError());
 	}
 
+	
+	private void dbgTestCapture() {
+		
+		mField.addMove(2, 2, 2);
+		recordMove(mPlayers.get(1), mField.toString());
+		mField.addMove(2, 3, 2);
+		recordMove(mPlayers.get(1), mField.toString());
+		mField.addMove(3, 2, 2);
+		recordMove(mPlayers.get(1), mField.toString());
+		mField.addMove(3, 3, 2);
+		recordMove(mPlayers.get(1), mField.toString());
+		
+		mField.addMove(2, 1, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(3, 1, 1);
+		
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(1, 2, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(1, 3, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(2, 4, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(3, 4, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+		
+		mField.addMove(4, 2, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(4, 3, 1);
+		recordMove(mPlayers.get(0), mField.toString());
+
+		
+	}
+	
 	@Override
 	public void playRound(int roundNumber) {
 	    System.out.println(String.format("playing round %d", roundNumber));
@@ -87,7 +128,7 @@ public class Processor implements GameHandler {
 				}
 				mMoveNumber++;
 				if (AbstractGame.DEV_MODE) {
-					mField.dumpBoard();
+					//mField.dumpBoard();
 				}
 			}
 		}

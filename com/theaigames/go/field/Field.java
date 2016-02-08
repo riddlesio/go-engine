@@ -5,7 +5,9 @@ import com.theaigames.util.Util;
 public class Field {
 	private int[][] mBoard;
 	private int[][][] mPreviousBoards; /* For checking Ko rule */
-
+	private int mFoundLiberties; /* For checking groups */
+	private Boolean[][] mAffectedFields; /* For checking groups */
+	
 	private int mCols = 0, mRows = 0;
 	private String mLastError = "";
 	private int mLastX = -1, mLastY = -1;
@@ -15,6 +17,7 @@ public class Field {
 		mRows = 19;
 		mBoard = new int[mCols][mRows];
 		mPreviousBoards = new int[3][mCols][mRows];
+		mAffectedFields = new Boolean[mCols][mRows];
 		clearBoard();
 	}
 	
@@ -94,6 +97,7 @@ public class Field {
 		/* If board is the same as 2 moves back, it is an illegal move. */
 		if (Util.compareBoards(mBoard, mPreviousBoards[0])) {
 			returnVal = false;
+			System.out.println("checkKoRule ILLEGAL");
 		}
 		
 		/* Undo the move */
@@ -138,11 +142,65 @@ public class Field {
 	private void checkCaptures() {
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
-				if (mBoard[x][y] > 0 && !fieldHasLiberties(x, y)) {
-					System.out.println("Found stone with no liberties: " + x + "," + y);
-					mBoard[x][y] = 0;
+				if (mBoard[x][y] > 0) {
+					mFoundLiberties = 0;
+					Boolean[][] mark = new Boolean[mRows][mCols];
+					for (int tx = 0; tx < mRows; tx++) {
+						for (int ty = 0; ty < mCols; ty++) {
+							mAffectedFields[tx][ty] = false;
+							mark[tx][ty] = false;
+						}
+					}
+					flood(mark, x, y, mBoard[x][y], 0);
+					if (mFoundLiberties == 0) { /* Group starves */
+						System.out.println("STARVE " + x + " " + y);
+						for (int tx = 0; tx < mRows; tx++) {
+							for (int ty = 0; ty < mCols; ty++) {
+								if (mAffectedFields[tx][ty]) {
+									mBoard[tx][ty] = 0;
+									/* TODO: Add points to player */
+								}
+							}
+						}
+					}
+					
+					//System.out.println("Result for " + x + "," + y + " mFoundLiberties: " + mFoundLiberties);
 				}
 			}
+		}
+	}
+	
+	/**
+	 * Recursive function to check stone group liberties
+	 * @param args : 
+	 * @return : 
+	 */
+	private void flood(Boolean [][]mark, int x, int y, int srcColor, int stackCounter) {
+		// make sure row and col are inside the board
+		if (x < 0) return;
+		if (y < 0) return;
+		if (x >= mRows) return;
+		if (y >= mCols) return;
+		
+		// make sure this pixel hasn't been visited yet
+		if (mark[x][y]) return;
+		
+		// make sure this pixel is the right color to fill
+		if (mBoard[x][y] != srcColor) {
+			if (mBoard[x][y] == 0) { mFoundLiberties++; }
+			return;
+		}
+		
+		// fill pixel with target color and mark it as visited
+		mAffectedFields[x][y] = true;
+		mark[x][y] = true;
+		// recursively fill surrounding pixels
+		// (this is equivalent to depth-first search)
+		if (stackCounter < 256) {
+			flood(mark, x - 1, y, srcColor, stackCounter+1);
+			flood(mark, x + 1, y, srcColor, stackCounter+1);
+			flood(mark, x, y - 1, srcColor, stackCounter+1);
+			flood(mark, x, y + 1, srcColor, stackCounter+1);
 		}
 	}
 	
@@ -269,3 +327,4 @@ public class Field {
 	    return !boardIsFull();
 	}
 }
+
