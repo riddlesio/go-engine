@@ -57,6 +57,10 @@ public class Field {
 	 * @return : true if legal move otherwise false
 	 */
 	public Boolean addMove(int x, int y, int move) {
+		int[][] originalBoard = new int[mBoard.length][mBoard[0].length];
+		for(int i=0; i<mBoard.length; i++)
+			  for(int j=0; j<mBoard[0].length; j++)
+				  originalBoard[i][j]=mBoard[i][j];
 		mLastError = "";
 		/* Check legality of move */
 		if (x < 0 || x >= mCols || y >= mRows || y < 0) { /* Move out of bounds */
@@ -67,10 +71,6 @@ public class Field {
 			mLastError = "Error: chosen position is already filled";
 			return false;
 		}
-		if (!checkKoRule(x, y, move)) { /* Check Ko Rule */
-			mLastError = "Error: illegal Ko Move";
-			return false;
-		}
 		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
 			mLastError = "Error: illegal Suicide Move";
 			return false;
@@ -79,7 +79,17 @@ public class Field {
 		mBoard[x][y] = move;
 		mLastX = x;
 		mLastY = y;
-		checkCaptures();
+
+		checkCaptures(move);
+		if (!checkKoRule(x, y, move)) { /* Check Ko Rule */
+			mLastError = "Error: violation of Ko Rule";
+			/* Undo move */
+			for(int i=0; i<mBoard.length; i++)
+				  for(int j=0; j<mBoard[0].length; j++)
+					  mBoard[i][j]=originalBoard[i][j];
+			recordHistory();
+			return false;
+		}
 		recordHistory();
 		return true;
 	}
@@ -92,16 +102,15 @@ public class Field {
 	private Boolean checkKoRule(int x, int y, int move) {
 		Boolean returnVal = true;
 		/* Make the move */
-		mBoard[x][y] = move;
+		//mBoard[x][y] = move;
 		
 		/* If board is the same as 2 moves back, it is an illegal move. */
-		if (Util.compareBoards(mBoard, mPreviousBoards[0])) {
+		if (Util.compareBoards(mBoard, mPreviousBoards[1])) {
 			returnVal = false;
-			System.out.println("checkKoRule ILLEGAL");
 		}
 		
 		/* Undo the move */
-		mBoard[x][y] = 0;
+		//mBoard[x][y] = 0;
 		return returnVal;
 	}
 	
@@ -139,10 +148,10 @@ public class Field {
 	 * @param args : 
 	 * @return : 
 	 */
-	private void checkCaptures() {
+	private void checkCaptures(int move) {
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
-				if (mBoard[x][y] > 0) {
+				if (mBoard[x][y] > 0 && mBoard[x][y] != move) {
 					mFoundLiberties = 0;
 					Boolean[][] mark = new Boolean[mRows][mCols];
 					for (int tx = 0; tx < mRows; tx++) {

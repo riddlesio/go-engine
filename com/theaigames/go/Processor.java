@@ -48,6 +48,7 @@ public class Processor implements GameHandler {
 		mMoveResults = new ArrayList<MoveResult>();
 		if (AbstractGame.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
+			dbgTestKoRule();
 			dbgTestCapture();
 			
 		}
@@ -70,44 +71,30 @@ public class Processor implements GameHandler {
 		recordMove(mPlayers.get(1), mField.toString());
 		mField.addMove(4, 1, 2);
 		recordMove(mPlayers.get(1), mField.toString());
-		
-		System.out.println(mField.getLastError());
 		mField.addMove(3, 1, 1);
-		System.out.println(mField.getLastError());
+		recordMove(mPlayers.get(0), mField.toString());
+		mField.addMove(2, 1, 2);
+		recordMove(mPlayers.get(1), mField.toString());
 	}
 
 	
 	private void dbgTestCapture() {
 		
-		mField.addMove(2, 2, 2);
+		mField.addMove(18, 1, 2);
 		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(2, 3, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(3, 2, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(3, 3, 2);
+		mField.addMove(18, 2, 2);
 		recordMove(mPlayers.get(1), mField.toString());
 		
-		mField.addMove(2, 1, 1);
+		mField.addMove(18, 0, 1);
 		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(3, 1, 1);
-		
+		mField.addMove(17, 1, 1);
 		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(1, 2, 1);
+		mField.addMove(17, 2, 1);
 		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(1, 3, 1);
+		mField.addMove(18, 3, 1);
 		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(2, 4, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(3, 4, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		
-		mField.addMove(4, 2, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(4, 3, 1);
-		recordMove(mPlayers.get(0), mField.toString());
+		//System.exit(0);
 
-		
 	}
 	
 	@Override
@@ -172,10 +159,12 @@ public class Processor implements GameHandler {
 		Move move = new Move(player);
 		move.setMove(mField.getLastX(), mField.getLastY());
 		move.setIllegalMove(mField.getLastError());
+		System.out.println(mField.getLastError());
 		mMoves.add(move);
 		
 		MoveResult moveResult = new MoveResult(player, move, mField);
 		moveResult.setMoveNumber(mMoveNumber);
+
 		mMoveResults.add(moveResult);
 	}
 	
@@ -241,7 +230,7 @@ public class Processor implements GameHandler {
 				state.put("move", move.getMoveNumber());
 				state.put("winner", "");
 				state.put("player", move.getPlayer().getId());
-				state.put("illegalMove", "");
+                state.put("illegalMove", move.getMove().getIllegalMove());
 				states.put(state);
 				
 				if (counter == mMoveResults.size()-1) { // final overlay state with winner

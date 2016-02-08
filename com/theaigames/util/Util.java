@@ -23,4 +23,21 @@ public final class Util {
 		return true;
 	}
 	
+	/**
+	 * Dumps a board to stdout
+	 * @param args : 
+	 * @return : 
+	 */
+	public static void dumpBoard(int[][] board, String label) {
+		System.out.print("\n\ndump '" + label + " ':\n");
+		for (int y = 0; y < board.length; y++) {
+			for (int x = 0; x < board[0].length; x++) {
+				System.out.print(board[x][y]);
+				if (x < board[0].length-1) {
+					System.out.print(", ");
+				}
+			}
+			System.out.print("\n");
+		}
+	}
 }
