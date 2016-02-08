@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.theaigames.game.player.AbstractPlayer;
+import com.theaigames.game.AbstractGame;
 import com.theaigames.game.GameHandler;
 import com.theaigames.go.field.Field;
 import com.theaigames.go.moves.Move;
@@ -45,6 +46,10 @@ public class Processor implements GameHandler {
 		mField = field;
 		mMoves = new ArrayList<Move>();
 		mMoveResults = new ArrayList<MoveResult>();
+		if (AbstractGame.DEV_MODE) {
+			System.out.println("Running in DEV_MODE");
+		}
+		
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.theaigames.util.Util;
 
 public class Field {
 	private int[][] mBoard;
+	private int[][][] mPreviousBoards; /* For checking Ko rule */
 
 	private int mCols = 0, mRows = 0;
 	private String mLastError = "";
@@ -13,6 +14,7 @@ public class Field {
 		mCols = 19;
 		mRows = 19;
 		mBoard = new int[mCols][mRows];
+		mPreviousBoards = new int[2][mCols][mRows];
 		clearBoard();
 	}
 	
@@ -53,20 +55,76 @@ public class Field {
 	 */
 	public Boolean addMove(int x, int y, int move) {
 		mLastError = "";
-		if (x < mCols && y < mRows && x >= 0 && y >= 0) { /* Move within range */
-			if (mBoard[x][y] == 0) { /*Field is available */
-				mBoard[x][y] = move;
-				mLastX = x;
-				mLastY = y;
-				return true;
-			} else {
-				mLastError = "Error: chosen position is already filled";
-			}
-		} else {
+		/* Check legality of move */
+		if (x < 0 || x >= mCols || y >= mRows || y < 0) { /* Move out of bounds */
 			mLastError = "Error: move out of bounds";
+			return false;
 		}
-		return false;
+		if (mBoard[x][y] != 0) { /*Field is not available */
+			mLastError = "Error: chosen position is already filled";
+			return false;
+		}
+		if (!checkKoRule(x, y, move)) { /* Check Ko Rule */
+			mLastError = "Error: illegal Ko Move";
+			return false;
+		}
+		/* Field is available */
+		mBoard[x][y] = move;
+		mLastX = x;
+		mLastY = y;
+		recordHistory();
+		return true;
 	}
+	
+	/**
+	 * Checks the Ko Rule. (A move that returns the game to the previous position)
+	 * @param args : int x, int y, int move
+	 * @return : true if legal move otherwise false
+	 */
+	public Boolean checkKoRule(int x, int y, int move) {
+		Boolean returnVal = true;
+		/* Make the move */
+		mBoard[x][y] = move;
+		
+		/* If board is the same as 2 moves back, it is an illegal move. */
+		if (Util.compareBoards(mBoard, mPreviousBoards[0])) {
+			returnVal = false;
+		}
+		
+		/* Undo the move */
+		mBoard[x][y] = 0;
+		return returnVal;
+	}
+	
+	/**
+	 * Checks the Suicide Rule. (A move which creates a group that immediately has no liberties)
+	 * @param args : int x, int y, int move
+	 * @return : true if legal move otherwise false
+	 */
+	public Boolean checkSuicideRule(int x, int y, int move) {
+		return true;
+	}
+	
+	/**
+	 * Keeps record of the last two boards, to check the Ko Rule
+	 * @param args : 
+	 * @return : 
+	 */
+	public void recordHistory() {
+		for (int i = 0; i < 1; i++) {			
+			for (int x = 0; x < mRows; x++) {
+				for (int y = 0; y < mCols; y++) {
+					mPreviousBoards[i][x][y] = mPreviousBoards[i+1][x][y];
+				}
+			}
+		}
+		for (int x = 0; x < mRows; x++) {
+			for (int y = 0; y < mCols; y++) {
+				mPreviousBoards[2][x][y] = mBoard[x][y];
+			}
+		}
+	}
+	
 	
 	/**
 	 * Returns reason why addMove returns false
