@@ -40,6 +40,7 @@ public class Processor implements GameHandler {
 	private List<MoveResult> mMoveResults;
 	private Field mField;
 	private int mGameOverByPlayerErrorPlayerId = 0;
+	private int mStonesPlayer1, mStonesPlayer2;
 
 	public Processor(List<Player> players, Field field) {
 		mPlayers = players;
@@ -162,7 +163,12 @@ public class Processor implements GameHandler {
 		System.out.println(mField.getLastError());
 		mMoves.add(move);
 		
-		MoveResult moveResult = new MoveResult(player, move, mField);
+		if (player.getId()==1) {
+			mStonesPlayer1+= mField.getStonesTaken();
+		} else {
+			mStonesPlayer2+= mField.getStonesTaken();
+		}
+		MoveResult moveResult = new MoveResult(player, move, mField, mStonesPlayer1, mStonesPlayer2);
 		moveResult.setMoveNumber(mMoveNumber);
 
 		mMoveResults.add(moveResult);
@@ -230,6 +236,8 @@ public class Processor implements GameHandler {
 				state.put("move", move.getMoveNumber());
 				state.put("winner", "");
 				state.put("player", move.getPlayer().getId());
+				state.put("player1stonestaken", move.mStonesPlayer1);
+				state.put("player2stonestaken", move.mStonesPlayer2);
                 state.put("illegalMove", move.getMove().getIllegalMove());
 				states.put(state);
 				

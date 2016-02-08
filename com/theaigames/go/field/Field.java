@@ -7,6 +7,7 @@ public class Field {
 	private int[][][] mPreviousBoards; /* For checking Ko rule */
 	private int mFoundLiberties; /* For checking groups */
 	private Boolean[][] mAffectedFields; /* For checking groups */
+	private int mStonesTaken;
 	
 	private int mCols = 0, mRows = 0;
 	private String mLastError = "";
@@ -58,6 +59,7 @@ public class Field {
 	 */
 	public Boolean addMove(int x, int y, int move) {
 		int[][] originalBoard = new int[mBoard.length][mBoard[0].length];
+		int originalStonesTaken = mStonesTaken;
 		for(int i=0; i<mBoard.length; i++)
 			  for(int j=0; j<mBoard[0].length; j++)
 				  originalBoard[i][j]=mBoard[i][j];
@@ -87,6 +89,7 @@ public class Field {
 			for(int i=0; i<mBoard.length; i++)
 				  for(int j=0; j<mBoard[0].length; j++)
 					  mBoard[i][j]=originalBoard[i][j];
+			mStonesTaken = 0;
 			recordHistory();
 			return false;
 		}
@@ -149,6 +152,7 @@ public class Field {
 	 * @return : 
 	 */
 	private void checkCaptures(int move) {
+		mStonesTaken = 0;
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
 				if (mBoard[x][y] > 0 && mBoard[x][y] != move) {
@@ -167,13 +171,11 @@ public class Field {
 							for (int ty = 0; ty < mCols; ty++) {
 								if (mAffectedFields[tx][ty]) {
 									mBoard[tx][ty] = 0;
-									/* TODO: Add points to player */
+									mStonesTaken++;
 								}
 							}
 						}
 					}
-					
-					//System.out.println("Result for " + x + "," + y + " mFoundLiberties: " + mFoundLiberties);
 				}
 			}
 		}
@@ -254,6 +256,15 @@ public class Field {
 	
 	public void setLastError(String error) {
 	    mLastError = error;
+	}
+	
+	/**
+	 * Returns number of stones taken in the last move
+	 * @param args : 
+	 * @return : int
+	 */
+	public int getStonesTaken() {
+		return mStonesTaken;
 	}
 	
 	/**
