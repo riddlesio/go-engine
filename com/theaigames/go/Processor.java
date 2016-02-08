@@ -48,8 +48,25 @@ public class Processor implements GameHandler {
 		mMoveResults = new ArrayList<MoveResult>();
 		if (AbstractGame.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
+			dbgTestKoRule();
+			
 		}
 		
+	}
+	
+	private void dbgTestKoRule() {
+		mField.addMove(2, 0, 1);
+		mField.addMove(1, 1, 1);
+		mField.addMove(2, 2, 1);
+		
+		mField.addMove(3, 0, 2);
+		mField.addMove(2, 1, 2);
+		mField.addMove(3, 2, 2);
+		mField.addMove(4, 1, 2);
+		
+		System.out.println(mField.getLastError());
+		mField.addMove(3, 1, 1);
+		System.out.println(mField.getLastError());
 	}
 
 	@Override
@@ -69,6 +86,9 @@ public class Processor implements GameHandler {
 					}
 				}
 				mMoveNumber++;
+				if (AbstractGame.DEV_MODE) {
+					mField.dumpBoard();
+				}
 			}
 		}
 	}

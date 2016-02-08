@@ -14,7 +14,7 @@ public class Field {
 		mCols = 19;
 		mRows = 19;
 		mBoard = new int[mCols][mRows];
-		mPreviousBoards = new int[2][mCols][mRows];
+		mPreviousBoards = new int[3][mCols][mRows];
 		clearBoard();
 	}
 	
@@ -68,10 +68,15 @@ public class Field {
 			mLastError = "Error: illegal Ko Move";
 			return false;
 		}
+		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
+			mLastError = "Error: illegal Suicide Move";
+			return false;
+		}
 		/* Field is available */
 		mBoard[x][y] = move;
 		mLastX = x;
 		mLastY = y;
+		checkCaptures();
 		recordHistory();
 		return true;
 	}
@@ -81,7 +86,7 @@ public class Field {
 	 * @param args : int x, int y, int move
 	 * @return : true if legal move otherwise false
 	 */
-	public Boolean checkKoRule(int x, int y, int move) {
+	private Boolean checkKoRule(int x, int y, int move) {
 		Boolean returnVal = true;
 		/* Make the move */
 		mBoard[x][y] = move;
@@ -101,7 +106,7 @@ public class Field {
 	 * @param args : int x, int y, int move
 	 * @return : true if legal move otherwise false
 	 */
-	public Boolean checkSuicideRule(int x, int y, int move) {
+	private Boolean checkSuicideRule(int x, int y, int move) {
 		return true;
 	}
 	
@@ -110,8 +115,8 @@ public class Field {
 	 * @param args : 
 	 * @return : 
 	 */
-	public void recordHistory() {
-		for (int i = 0; i < 1; i++) {			
+	private void recordHistory() {
+		for (int i = 0; i < mPreviousBoards.length-1; i++) {			
 			for (int x = 0; x < mRows; x++) {
 				for (int y = 0; y < mCols; y++) {
 					mPreviousBoards[i][x][y] = mPreviousBoards[i+1][x][y];
@@ -120,9 +125,54 @@ public class Field {
 		}
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
-				mPreviousBoards[2][x][y] = mBoard[x][y];
+				mPreviousBoards[mPreviousBoards.length-1][x][y] = mBoard[x][y];
 			}
 		}
+	}
+
+	/**
+	 * Check for captures stones or stone groups
+	 * @param args : 
+	 * @return : 
+	 */
+	private void checkCaptures() {
+		for (int x = 0; x < mRows; x++) {
+			for (int y = 0; y < mCols; y++) {
+				if (mBoard[x][y] > 0 && !fieldHasLiberties(x, y)) {
+					System.out.println("Found stone with no liberties: " + x + "," + y);
+					mBoard[x][y] = 0;
+				}
+			}
+		}
+	}
+	
+	private Boolean fieldHasLiberties(int x, int y) {
+		Boolean libertyLeft = true, libertyRight = true, libertyUp = true, libertyDown = true;
+		if (x == 0) {
+			libertyLeft = false;
+		} else {
+			if (mBoard[x-1][y] != 0) 
+				libertyLeft = false;
+		}
+		if (x == mCols-1) {
+			libertyRight = false;
+		} else {
+			if (mBoard[x+1][y] != 0) 
+				libertyRight = false;
+		}
+		if (y == 0) {
+			libertyUp = false;
+		} else {
+			if (mBoard[x][y-1] != 0) 
+				libertyUp = false;
+		}
+		if (y == mRows-1) {
+			libertyDown = false;
+		} else {
+			if (mBoard[x][y+1] != 0) 
+				libertyDown = false;
+		}
+		return (libertyLeft || libertyRight || libertyUp || libertyDown);
 	}
 	
 	
