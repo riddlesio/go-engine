@@ -117,7 +117,7 @@ public class Processor implements GameHandler {
 		player.getBot().outputEngineWarning(String.format("Failed to parse input '%s'", input));
 	}
 	
-	public void recordMove(Player player) {
+	private void recordMove(Player player) {
 		Move move = new Move(player);
 		move.setMove(mField.getLastX(), mField.getLastY());
 		move.setIllegalMove(mField.getLastError());
