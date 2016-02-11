@@ -59,7 +59,6 @@ public class Field {
 	 */
 	public Boolean addMove(int x, int y, int move) {
 		int[][] originalBoard = new int[mBoard.length][mBoard[0].length];
-		int originalStonesTaken = mStonesTaken;
 		for(int i=0; i<mBoard.length; i++)
 			  for(int j=0; j<mBoard[0].length; j++)
 				  originalBoard[i][j]=mBoard[i][j];
@@ -73,16 +72,22 @@ public class Field {
 			mLastError = "Error: chosen position is already filled";
 			return false;
 		}
-		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
-			mLastError = "Error: illegal Suicide Move";
-			return false;
-		}
 		/* Field is available */
 		mBoard[x][y] = move;
 		mLastX = x;
 		mLastY = y;
 
 		checkCaptures(move);
+		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
+			mLastError = "Error: illegal Suicide Move";
+			/* Undo move */
+			for(int i=0; i<mBoard.length; i++)
+				  for(int j=0; j<mBoard[0].length; j++)
+					  mBoard[i][j]=originalBoard[i][j];
+			mStonesTaken = 0;
+			recordHistory();
+			return false;
+		}
 		if (!checkKoRule(x, y, move)) { /* Check Ko Rule */
 			mLastError = "Error: violation of Ko Rule";
 			/* Undo move */
@@ -123,7 +128,16 @@ public class Field {
 	 * @return : true if legal move otherwise false
 	 */
 	private Boolean checkSuicideRule(int x, int y, int move) {
-		return true;
+		mFoundLiberties = 0;
+		Boolean[][] mark = new Boolean[mRows][mCols];
+		for (int tx = 0; tx < mRows; tx++) {
+			for (int ty = 0; ty < mCols; ty++) {
+				mAffectedFields[tx][ty] = false;
+				mark[tx][ty] = false;
+			}
+		}
+		flood(mark, x, y, move, 0);
+		return (mFoundLiberties > 0);
 	}
 	
 	/**

@@ -30,6 +30,7 @@ import com.theaigames.go.field.Field;
 import com.theaigames.go.moves.Move;
 import com.theaigames.go.moves.MoveResult;
 import com.theaigames.go.player.Player;
+import com.theaigames.go.testsuite.Testsuite;
 
 public class Processor implements GameHandler {
 	
@@ -49,59 +50,20 @@ public class Processor implements GameHandler {
 		mMoveResults = new ArrayList<MoveResult>();
 		if (AbstractGame.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
-			dbgTestKoRule();
-			dbgTestCapture();
-			
+			Testsuite t = new Testsuite();
+			t.dbgTestKoRule(mField);
+			t.dbgTestCapture(mField);
+			t.dbgTestSuicideRule(mField);
 		}
 		
 	}
 	
-	private void dbgTestKoRule() {
-		mField.addMove(2, 0, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(1, 1, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(2, 2, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		
-		mField.addMove(3, 0, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(2, 1, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(3, 2, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(4, 1, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(3, 1, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(2, 1, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-	}
-
 	
-	private void dbgTestCapture() {
-		
-		mField.addMove(18, 1, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		mField.addMove(18, 2, 2);
-		recordMove(mPlayers.get(1), mField.toString());
-		
-		mField.addMove(18, 0, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(17, 1, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(17, 2, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		mField.addMove(18, 3, 1);
-		recordMove(mPlayers.get(0), mField.toString());
-		//System.exit(0);
-
-	}
 	
 	@Override
 	public void playRound(int roundNumber) {
-	    System.out.println(String.format("playing round %d", roundNumber));
-	    mRoundNumber = roundNumber;
+		System.out.println(String.format("playing round %d", roundNumber));
+		mRoundNumber = roundNumber;
 		for (Player player : mPlayers) {
 			if (!isGameOver()) {
 				player.sendUpdate("round", roundNumber);
@@ -129,34 +91,33 @@ public class Processor implements GameHandler {
 	 */
 	private Boolean parseResponse(String r, Player player) {
 		String[] parts = r.split(" ");
-		String s = mField.toString();
 		if (parts[0].equals("place_move")) {
-		    try {
-    			int column = (int) Double.parseDouble(parts[1]);
-    			int row = (int) Double.parseDouble(parts[2]);
-    			
-    			if (mField.addMove(column, row, player.getId())) {
-                    recordMove(player, s);
-                    return true;
-                } else {
-                    player.getBot().outputEngineWarning(mField.getLastError());
-                }
-		    } catch (Exception e) {
-		        createParseError(player, r);
-		    }
+			try {
+				int column = (int) Double.parseDouble(parts[1]);
+				int row = (int) Double.parseDouble(parts[2]);
+				
+				if (mField.addMove(column, row, player.getId())) {
+					recordMove(player);
+					return true;
+				} else {
+					player.getBot().outputEngineWarning(mField.getLastError());
+				}
+			} catch (Exception e) {
+				createParseError(player, r);
+			}
 		} else {
-		    createParseError(player, r);
+			createParseError(player, r);
 		}
-		recordMove(player, s);
+		recordMove(player);
 		return false;
 	}
 	
 	private void createParseError(Player player, String input) {
-	    mField.setLastError("Error: failed to parse input");
-        player.getBot().outputEngineWarning(String.format("Failed to parse input '%s'", input));
+		mField.setLastError("Error: failed to parse input");
+		player.getBot().outputEngineWarning(String.format("Failed to parse input '%s'", input));
 	}
 	
-	private void recordMove(Player player, String oldFieldPresentationString) {
+	public void recordMove(Player player) {
 		Move move = new Move(player);
 		move.setMove(mField.getLastX(), mField.getLastY());
 		move.setIllegalMove(mField.getLastError());
@@ -238,24 +199,24 @@ public class Processor implements GameHandler {
 				state.put("player", move.getPlayer().getId());
 				state.put("player1stonestaken", move.mStonesPlayer1);
 				state.put("player2stonestaken", move.mStonesPlayer2);
-                state.put("illegalMove", move.getMove().getIllegalMove());
+				state.put("illegalMove", move.getMove().getIllegalMove());
 				states.put(state);
 				
 				if (counter == mMoveResults.size()-1) { // final overlay state with winner
-				    String winnerstring = "";
-                    if (winner == null) {
-                        winnerstring = "none";
-                    } else {
-                        winnerstring = winner.getName();
-                    }
-                    JSONObject state3 = new JSONObject();
-                    state3.put("field", move.toString());
-                    state3.put("move", move.getMoveNumber());
-                    state3.put("winner", winnerstring);
-                    state3.put("player", move.getPlayer().getId());
-                    state3.put("illegalMove", move.getMove().getIllegalMove());
-                    states.put(state3);
-                }
+					String winnerstring = "";
+					if (winner == null) {
+						winnerstring = "none";
+					} else {
+						winnerstring = winner.getName();
+					}
+					JSONObject state3 = new JSONObject();
+					state3.put("field", move.toString());
+					state3.put("move", move.getMoveNumber());
+					state3.put("winner", winnerstring);
+					state3.put("player", move.getPlayer().getId());
+					state3.put("illegalMove", move.getMove().getIllegalMove());
+					states.put(state3);
+				}
 				counter++;
 			}
 			output.put("states", states);
