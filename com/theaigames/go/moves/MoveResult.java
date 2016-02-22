@@ -37,6 +37,10 @@ public class MoveResult {
 		return mMoveNumber;
 	}
 	
+	public String getAction() {
+		return mMove.getAction();
+	}
+	
 	public String toString() {
 	    return mString;
 	}

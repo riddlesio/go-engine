@@ -60,5 +60,36 @@ public class Testsuite {
 		field.addMove(9, 10, 1); /* Should work fine */
 		System.out.println(field.getLastError());
 		/* TODO: Assert field state */
+		
+		field.addMove(1, 12, 1);
+		field.addMove(2, 12, 1);
+		field.addMove(3, 12, 1);
+		
+		field.addMove(0, 13, 1);
+		field.addMove(1, 13, 2);
+		field.addMove(2, 13, 2);
+		field.addMove(3, 13, 2);
+		field.addMove(4, 13, 1);
+		
+		field.addMove(0, 14, 1);
+		field.addMove(1, 14, 2);
+		field.addMove(3, 14, 2);
+		field.addMove(4, 14, 1);
+		
+		field.addMove(0, 15, 1);
+		field.addMove(1, 15, 2);
+		field.addMove(2, 15, 2);
+		field.addMove(3, 15, 2);
+		field.addMove(4, 15, 1);
+		
+		field.addMove(1, 16, 1);
+		field.addMove(2, 16, 1);
+		field.addMove(3, 16, 1);
+		
+		field.addMove(2, 14, 1);
+
+		
+		
+
 	}
 }

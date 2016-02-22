@@ -105,10 +105,20 @@ public class Processor implements GameHandler {
 			} catch (Exception e) {
 				createParseError(player, r);
 			}
+			recordMove(player);
+		} else if (parts[0].equals("pass")) {
+			Move move = new Move(player);
+			move.setMove("pass", mField.getLastX(), mField.getLastY());
+			move.setIllegalMove("Pass");
+			mMoves.add(move);
+			MoveResult moveResult = new MoveResult(player, move, mField, mStonesPlayer1, mStonesPlayer2);
+			moveResult.setMoveNumber(mMoveNumber);
+			mMoveResults.add(moveResult);
+			return true;
 		} else {
 			createParseError(player, r);
+			recordMove(player);
 		}
-		recordMove(player);
 		return false;
 	}
 	
@@ -119,7 +129,7 @@ public class Processor implements GameHandler {
 	
 	private void recordMove(Player player) {
 		Move move = new Move(player);
-		move.setMove(mField.getLastX(), mField.getLastY());
+		move.setMove("move", mField.getLastX(), mField.getLastY());
 		move.setIllegalMove(mField.getLastError());
 		System.out.println(mField.getLastError());
 		mMoves.add(move);
@@ -195,6 +205,7 @@ public class Processor implements GameHandler {
 				JSONObject state = new JSONObject();
 				state.put("field", move.toString());
 				state.put("move", move.getMoveNumber());
+				state.put("action", move.getAction());
 				state.put("winner", "");
 				state.put("player", move.getPlayer().getId());
 				state.put("player1stonestaken", move.mStonesPlayer1);

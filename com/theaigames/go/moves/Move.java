@@ -6,6 +6,7 @@ import com.theaigames.game.player.AbstractPlayer;
 public class Move extends AbstractMove {
 
 	private int mColumn = 0, mRow = 0;
+	private String mAction = "move";
 	
 	public Move(AbstractPlayer player) {
 		super(player);
@@ -14,9 +15,10 @@ public class Move extends AbstractMove {
 	/**
 	 * @param column : Sets the column of a move
 	 */
-	public void setMove(int column, int row) {
+	public void setMove(String move, int column, int row) {
 		this.mColumn = column;
 		this.mRow = row;
+		this.mAction = move;
 	}
 	
 	/**
@@ -31,5 +33,12 @@ public class Move extends AbstractMove {
 	 */
 	public int getRow() {
 		return mRow;
+	}
+
+	/**
+	 * @return : Action
+	 */
+	public String getAction() {
+		return mAction;
 	}
 }
