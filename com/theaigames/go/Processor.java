@@ -40,7 +40,7 @@ public class Processor implements GameHandler {
 	private List<Move> mMoves;
 	private List<MoveResult> mMoveResults;
 	private Field mField;
-	private int mGameOverByPlayerErrorPlayerId = 0;
+	private int mGameOverByPlayerErrorPlayerId = 0, mPassesInARow = 0;
 	private int mStonesPlayer1, mStonesPlayer2;
 
 	public Processor(List<Player> players, Field field) {
@@ -98,6 +98,7 @@ public class Processor implements GameHandler {
 				
 				if (mField.addMove(column, row, player.getId())) {
 					recordMove(player);
+					mPassesInARow = 0;
 					return true;
 				} else {
 					player.getBot().outputEngineWarning(mField.getLastError());
@@ -107,9 +108,14 @@ public class Processor implements GameHandler {
 			}
 			recordMove(player);
 		} else if (parts[0].equals("pass")) {
+			mPassesInARow++;
 			Move move = new Move(player);
 			move.setMove("pass", mField.getLastX(), mField.getLastY());
-			move.setIllegalMove("Pass");
+			if (mPassesInARow == 2) {
+				move.setIllegalMove("Second pass");
+			} else {
+				move.setIllegalMove("Pass");
+			}
 			mMoves.add(move);
 			MoveResult moveResult = new MoveResult(player, move, mField, mStonesPlayer1, mStonesPlayer2);
 			moveResult.setMoveNumber(mMoveNumber);
@@ -253,6 +259,6 @@ public class Processor implements GameHandler {
 
 	@Override
 	public boolean isGameOver() {
-		return (!mField.isMoveAvailable() || getWinner() != null);
+		return (!mField.isMoveAvailable() || getWinner() != null || mPassesInARow >=2);
 	}
 }
