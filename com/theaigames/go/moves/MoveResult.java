@@ -9,15 +9,17 @@ public class MoveResult {
 	private Move mMove;
 	private Field mField;
 	private String mString;
-	public int mStonesPlayer1 = 0;
-	public int mStonesPlayer2 = 0;
+	public int mStonesPlayer1 = 0, mStonesPlayer2 = 0;
+	public int mScorePlayer1 = 0, mScorePlayer2 = 0;
 
 	public MoveResult(Player player, Move move, Field field, int stonesPlayer1, int stonesPlayer2) {
 		mPlayer = player;
 		mMove = move;
 		mField = field;
 		mStonesPlayer1 = stonesPlayer1;
-		mStonesPlayer2 = stonesPlayer2;
+		mStonesPlayer2 = stonesPlayer2;		
+		mScorePlayer1 = field.calculateScore(1);
+		mScorePlayer2 = field.calculateScore(2);
 		mString = field.toString();
 	}
 	

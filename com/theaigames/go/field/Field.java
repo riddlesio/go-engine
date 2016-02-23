@@ -5,9 +5,12 @@ import com.theaigames.util.Util;
 public class Field {
 	private int[][] mBoard;
 	private int[][][] mPreviousBoards; /* For checking Ko rule */
-	private int mFoundLiberties; /* For checking groups */
+	private int mFoundLiberties, mNrAffectedFields; /* For checking groups */
 	private Boolean[][] mAffectedFields; /* For checking groups */
+	private Boolean[][] mCheckedFields; /* For checking groups */
+
 	private int mStonesTaken;
+	private Boolean mIsTerritory = false;
 	
 	private int mCols = 0, mRows = 0;
 	private String mLastError = "";
@@ -19,6 +22,7 @@ public class Field {
 		mBoard = new int[mCols][mRows];
 		mPreviousBoards = new int[3][mCols][mRows];
 		mAffectedFields = new Boolean[mCols][mRows];
+		mCheckedFields = new Boolean[mCols][mRows];
 		clearBoard();
 	}
 	
@@ -221,7 +225,7 @@ public class Field {
 		mark[x][y] = true;
 		// recursively fill surrounding pixels
 		// (this is equivalent to depth-first search)
-		if (stackCounter < 256) {
+		if (stackCounter < 512) {
 			flood(mark, x - 1, y, srcColor, stackCounter+1);
 			flood(mark, x + 1, y, srcColor, stackCounter+1);
 			flood(mark, x, y - 1, srcColor, stackCounter+1);
@@ -359,6 +363,135 @@ public class Field {
 	 */
 	public Boolean isMoveAvailable() {
 	    return !boardIsFull();
+	}
+	
+	/**
+	 * Returns player score according to Tromp-Taylor Rules
+	 * @param args : int playerId
+	 * @return : int player score
+	 */
+	public int calculateScore(int playerId) {
+		int score = 0;
+		/* Calculate the number of stones a player has on the board */
+		for (int y = 0; y < mRows; y++) {
+			for (int x = 0; x < mCols; x++) {
+				if (mBoard[x][y] == playerId) {
+					score++;
+				}
+			}
+		}
+		/* TODO: Add empty points that reach only her color */
+		Boolean[][] mark = new Boolean[mRows][mCols];		
+		for (int x = 0; x < mRows; x++) {
+			for (int y = 0; y < mCols; y++) {
+				mCheckedFields[x][y] = false;
+			}
+		}
+		//dumpBoard();
+
+		mNrAffectedFields = 0;
+		int counter = 0;
+		for (int y = 0; y < mRows; y++) {
+			for (int x = 0; x < mCols; x++) {
+
+				if (mBoard[x][y] == 0 && mCheckedFields[x][y] == false) {
+					for (int tx = 0; tx < mRows; tx++) {
+						for (int ty = 0; ty < mCols; ty++) {
+							mAffectedFields[tx][ty] = false;
+							mark[tx][ty] = false;
+
+						}
+					}
+					
+					mIsTerritory = true;
+					mNrAffectedFields = 0;
+					
+					floodFindTerritory(mark, x, y, playerId, 0);
+
+					if (mIsTerritory) {
+						score += mNrAffectedFields;
+						for (int tx = 0; tx < mRows; tx++) {
+							for (int ty = 0; ty < mCols; ty++) {
+								if (mAffectedFields[tx][ty]) {
+									mCheckedFields[tx][ty] = true;
+								}
+							}
+						}
+
+					}
+					if (playerId == 1) {
+						//System.out.println("x: " + x + " y: " + y);
+						//System.out.println("playerId: " + playerId  + " mIsTerritory: " + mIsTerritory + " mNrAffectedFields: " + mNrAffectedFields);
+					}
+					counter++;
+				}
+			}
+		}
+		//System.out.println("fields checked: " + counter);
+		return score;
+	}
+	
+	/**
+	 * Recursive function to check stone group liberties.
+	 * Sets mIsTerritory member variable with result.
+	 * @param args : 
+	 * @return : 
+	 */
+	private void floodFindTerritory(Boolean [][]mark, int x, int y, int playerid, int stackCounter) {
+		/* Strategy: 
+		 * If edge other than (playerid or 0 or board edge) has been found, then no territory.
+		 */
+		// make sure row and col are inside the board
+		if (x < 0) { mIsTerritory = false; return; }
+		if (y < 0) { mIsTerritory = false; return; }
+		if (x >= mRows) { mIsTerritory = false; return; }
+		if (y >= mCols) { mIsTerritory = false; return; }
+
+		// make sure this pixel hasn't been visited yet
+		if (mark[x][y]) return;
+		
+		// make sure this pixel is the right color to fill
+		if (mBoard[x][y] > 0) {
+			if (mBoard[x][y] != playerid) {
+				mIsTerritory = false;
+			}
+			return;
+		}	
+		
+		mAffectedFields[x][y] = true;
+		
+		// fill pixel with target color and mark it as visited
+		mNrAffectedFields++;
+		mark[x][y] = true;
+
+		// recursively fill surrounding pixels
+		// (this is equivalent to depth-first search)
+		if (stackCounter < 512) {
+			floodFindTerritory(mark, x - 1, y, playerid, stackCounter+1);
+			floodFindTerritory(mark, x + 1, y, playerid, stackCounter+1);
+			floodFindTerritory(mark, x, y - 1, playerid, stackCounter+1);
+			floodFindTerritory(mark, x, y + 1, playerid, stackCounter+1);
+		}
+	}
+	
+	/**
+	 * Dumps affectedFields to stdout
+	 * @param args : 
+	 * @return : 
+	 */
+	public void dumpAffectedFields() {
+		System.out.print("\n\n");
+		for (int y = 0; y < mRows; y++) {
+			for (int x = 0; x < mCols; x++) {
+				String a = (mAffectedFields[x][y]) ? "1" : "0";
+				System.out.print(a);
+				if (x < mCols-1) {
+					String s = ", ";
+					System.out.print(s);
+				}
+			}
+			System.out.print("\n");
+		}
 	}
 }
 

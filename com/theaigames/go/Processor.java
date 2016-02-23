@@ -216,6 +216,8 @@ public class Processor implements GameHandler {
 				state.put("player", move.getPlayer().getId());
 				state.put("player1stonestaken", move.mStonesPlayer1);
 				state.put("player2stonestaken", move.mStonesPlayer2);
+				state.put("player1score", move.mScorePlayer1);
+				state.put("player2score", move.mScorePlayer2);
 				state.put("illegalMove", move.getMove().getIllegalMove());
 				states.put(state);
 				
