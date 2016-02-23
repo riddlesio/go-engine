@@ -41,7 +41,7 @@ public class Processor implements GameHandler {
 	private List<MoveResult> mMoveResults;
 	private Field mField;
 	private int mGameOverByPlayerErrorPlayerId = 0, mPassesInARow = 0;
-	private int mStonesPlayer1, mStonesPlayer2;
+	private int mStonesTakenPlayer1, mStonesTakenPlayer2;
 
 	public Processor(List<Player> players, Field field) {
 		mPlayers = players;
@@ -54,6 +54,7 @@ public class Processor implements GameHandler {
 			//t.dbgTestKoRule(mField);
 			//t.dbgTestCapture(mField);
 			//t.dbgTestSuicideRule(mField);
+			t.dbgTestScore(mField);
 		}
 		
 	}
@@ -117,7 +118,7 @@ public class Processor implements GameHandler {
 				move.setIllegalMove("Pass");
 			}
 			mMoves.add(move);
-			MoveResult moveResult = new MoveResult(player, move, mField, mStonesPlayer1, mStonesPlayer2);
+			MoveResult moveResult = new MoveResult(player, move, mField, 10, 20, mStonesTakenPlayer1, mStonesTakenPlayer2);
 			moveResult.setMoveNumber(mMoveNumber);
 			mMoveResults.add(moveResult);
 			return true;
@@ -141,11 +142,11 @@ public class Processor implements GameHandler {
 		mMoves.add(move);
 		
 		if (player.getId()==1) {
-			mStonesPlayer1+= mField.getStonesTaken();
+			mStonesTakenPlayer1+= mField.getStonesTaken();
 		} else {
-			mStonesPlayer2+= mField.getStonesTaken();
+			mStonesTakenPlayer2+= mField.getStonesTaken();
 		}
-		MoveResult moveResult = new MoveResult(player, move, mField, mStonesPlayer1, mStonesPlayer2);
+		MoveResult moveResult = new MoveResult(player, move, mField, 10, 20, mStonesTakenPlayer1, mStonesTakenPlayer2);
 		moveResult.setMoveNumber(mMoveNumber);
 
 		mMoveResults.add(moveResult);
@@ -211,8 +212,10 @@ public class Processor implements GameHandler {
 				state.put("action", move.getAction());
 				state.put("winner", "");
 				state.put("player", move.getPlayer().getId());
-				state.put("player1stonestaken", move.mStonesPlayer1);
-				state.put("player2stonestaken", move.mStonesPlayer2);
+				state.put("player1stones", move.mStonesPlayer1);
+				state.put("player2stones", move.mStonesPlayer2);
+				state.put("player1stonestaken", move.mStonesTakenPlayer1);
+				state.put("player2stonestaken", move.mStonesTakenPlayer2);
 				state.put("player1score", move.mScorePlayer1);
 				state.put("player2score", move.mScorePlayer2);
 				state.put("illegalMove", move.getMove().getIllegalMove());
@@ -230,8 +233,10 @@ public class Processor implements GameHandler {
 					state3.put("move", move.getMoveNumber());
 					state3.put("winner", winnerstring);
 					state3.put("player", move.getPlayer().getId());
-					state3.put("player1stonestaken", move.mStonesPlayer1);
-					state3.put("player2stonestaken", move.mStonesPlayer2);
+					state3.put("player1stones", move.mStonesPlayer1);
+					state3.put("player2stones", move.mStonesPlayer2);
+					state3.put("player1stonestaken", move.mStonesTakenPlayer1);
+					state3.put("player2stonestaken", move.mStonesTakenPlayer2);
 					state3.put("player1score", move.mScorePlayer1);
 					state3.put("player2score", move.mScorePlayer2);
 					state3.put("illegalMove", move.getMove().getIllegalMove());

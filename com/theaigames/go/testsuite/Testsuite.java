@@ -20,7 +20,6 @@ public class Testsuite {
 
 		/* TODO: Assert field state */
 	}
-
 	
 	public void dbgTestCapture(Field field) {
 		field.addMove(18, 1, 2);
@@ -87,9 +86,27 @@ public class Testsuite {
 		field.addMove(3, 16, 1);
 		
 		field.addMove(2, 14, 1);
-
+	}
+	
+	public void dbgTestScore(Field field) {
+		field.addMove(6, 6, 2);
+		field.addMove(7, 6, 2);
+		field.addMove(8, 6, 2);
 		
+		field.addMove(8, 7, 2);
+		field.addMove(8, 8, 2);
+		field.addMove(8, 9, 2);
 		
+		field.addMove(6, 7, 1);
+		field.addMove(6, 8, 1);
+		field.addMove(6, 9, 1);
 
+		field.addMove(6, 10, 1);
+		field.addMove(7, 10, 1);
+		field.addMove(8, 10, 1);
+		
+		field.addMove(7, 9, 1);
+
+		/* TODO: Assert field state */
 	}
 }
