@@ -57,7 +57,7 @@ public abstract class AbstractGame implements Logic {
 	public int NUM_TEST_BOTS; // number of bots for this game
 	
 	public AbstractGame() {
-		maxRounds = 100; // set this later if there is a maximum amount of rounds for this game
+		maxRounds = 50; // set this later if there is a maximum amount of rounds for this game
 	}
 
 	/**

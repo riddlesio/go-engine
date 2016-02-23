@@ -442,10 +442,10 @@ public class Field {
 		 * If edge other than (playerid or 0 or board edge) has been found, then no territory.
 		 */
 		// make sure row and col are inside the board
-		if (x < 0) { mIsTerritory = false; return; }
-		if (y < 0) { mIsTerritory = false; return; }
-		if (x >= mRows) { mIsTerritory = false; return; }
-		if (y >= mCols) { mIsTerritory = false; return; }
+		if (x < 0) { return; }
+		if (y < 0) { return; }
+		if (x >= mRows) { return; }
+		if (y >= mCols) { return; }
 
 		// make sure this pixel hasn't been visited yet
 		if (mark[x][y]) return;

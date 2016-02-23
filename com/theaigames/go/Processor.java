@@ -51,9 +51,9 @@ public class Processor implements GameHandler {
 		if (AbstractGame.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
 			Testsuite t = new Testsuite();
-			t.dbgTestKoRule(mField);
-			t.dbgTestCapture(mField);
-			t.dbgTestSuicideRule(mField);
+			//t.dbgTestKoRule(mField);
+			//t.dbgTestCapture(mField);
+			//t.dbgTestSuicideRule(mField);
 		}
 		
 	}
@@ -158,14 +158,11 @@ public class Processor implements GameHandler {
 
 	@Override
 	public AbstractPlayer getWinner() {
-		int winner = mField.getWinner();
-		if (mGameOverByPlayerErrorPlayerId > 0) { /* Game over due to too many player errors. Look up the other player, which became the winner */
-			for (Player player : mPlayers) {
-				if (player.getId() != mGameOverByPlayerErrorPlayerId) {
-					return player;
-				}
-			}
-		}
+		int scorePlayer1 = mField.calculateScore(1);
+		int scorePlayer2 = mField.calculateScore(2);
+		int winner = 0;
+		if (scorePlayer1 > scorePlayer2) winner = 1;
+		if (scorePlayer2 > scorePlayer1) winner = 2;
 		if (winner != 0) {
 			for (Player player : mPlayers) {
 				if (player.getId() == winner) {
@@ -233,6 +230,10 @@ public class Processor implements GameHandler {
 					state3.put("move", move.getMoveNumber());
 					state3.put("winner", winnerstring);
 					state3.put("player", move.getPlayer().getId());
+					state3.put("player1stonestaken", move.mStonesPlayer1);
+					state3.put("player2stonestaken", move.mStonesPlayer2);
+					state3.put("player1score", move.mScorePlayer1);
+					state3.put("player2score", move.mScorePlayer2);
 					state3.put("illegalMove", move.getMove().getIllegalMove());
 					states.put(state3);
 				}
@@ -261,6 +262,6 @@ public class Processor implements GameHandler {
 
 	@Override
 	public boolean isGameOver() {
-		return (!mField.isMoveAvailable() || getWinner() != null || mPassesInARow >=2);
+		return (!mField.isMoveAvailable() || mPassesInARow >=2);
 	}
 }
