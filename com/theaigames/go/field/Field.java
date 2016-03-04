@@ -205,26 +205,26 @@ public class Field {
 	 * @return : 
 	 */
 	private void flood(Boolean [][]mark, int x, int y, int srcColor, int stackCounter) {
-		// make sure row and col are inside the board
+		// Make sure row and col are inside the board
 		if (x < 0) return;
 		if (y < 0) return;
 		if (x >= mRows) return;
 		if (y >= mCols) return;
 		
-		// make sure this pixel hasn't been visited yet
+		// Make sure this field hasn't been visited yet
 		if (mark[x][y]) return;
 		
-		// make sure this pixel is the right color to fill
+		// Make sure this field is the right color to fill
 		if (mBoard[x][y] != srcColor) {
 			if (mBoard[x][y] == 0) { mFoundLiberties++; }
 			return;
 		}
 		
-		// fill pixel with target color and mark it as visited
+		// Fill field with target color and mark it as visited
 		mAffectedFields[x][y] = true;
 		mark[x][y] = true;
-		// recursively fill surrounding pixels
-		// (this is equivalent to depth-first search)
+		
+		// Recursively fill surrounding fields
 		if (stackCounter < 512) {
 			flood(mark, x - 1, y, srcColor, stackCounter+1);
 			flood(mark, x + 1, y, srcColor, stackCounter+1);
@@ -380,20 +380,17 @@ public class Field {
 				}
 			}
 		}
-		/* TODO: Add empty points that reach only her color */
+		/* Add empty points that reach only playerId color */
 		Boolean[][] mark = new Boolean[mRows][mCols];		
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
 				mCheckedFields[x][y] = false;
 			}
 		}
-		//dumpBoard();
 
 		mNrAffectedFields = 0;
-		int counter = 0;
 		for (int y = 0; y < mRows; y++) {
 			for (int x = 0; x < mCols; x++) {
-
 				if (mBoard[x][y] == 0 && mCheckedFields[x][y] == false) {
 					for (int tx = 0; tx < mRows; tx++) {
 						for (int ty = 0; ty < mCols; ty++) {
@@ -405,7 +402,6 @@ public class Field {
 					
 					mIsTerritory = true;
 					mNrAffectedFields = 0;
-					
 					floodFindTerritory(mark, x, y, playerId, 0);
 
 					if (mIsTerritory) {
@@ -419,15 +415,9 @@ public class Field {
 						}
 
 					}
-					if (playerId == 1) {
-						//System.out.println("x: " + x + " y: " + y);
-						//System.out.println("playerId: " + playerId  + " mIsTerritory: " + mIsTerritory + " mNrAffectedFields: " + mNrAffectedFields);
-					}
-					counter++;
 				}
 			}
 		}
-		//System.out.println("fields checked: " + counter);
 		return score;
 	}
 	
@@ -441,16 +431,16 @@ public class Field {
 		/* Strategy: 
 		 * If edge other than (playerid or 0 or board edge) has been found, then no territory.
 		 */
-		// make sure row and col are inside the board
+		// Make sure row and col are inside the board
 		if (x < 0) { return; }
 		if (y < 0) { return; }
 		if (x >= mRows) { return; }
 		if (y >= mCols) { return; }
 
-		// make sure this pixel hasn't been visited yet
+		// Make sure this field hasn't been visited yet
 		if (mark[x][y]) return;
 		
-		// make sure this pixel is the right color to fill
+		// Make sure this field is the right color to fill
 		if (mBoard[x][y] > 0) {
 			if (mBoard[x][y] != playerid) {
 				mIsTerritory = false;
@@ -460,12 +450,11 @@ public class Field {
 		
 		mAffectedFields[x][y] = true;
 		
-		// fill pixel with target color and mark it as visited
+		// Mark field as visited
 		mNrAffectedFields++;
 		mark[x][y] = true;
 
-		// recursively fill surrounding pixels
-		// (this is equivalent to depth-first search)
+		// Recursively check surrounding fields
 		if (stackCounter < 512) {
 			floodFindTerritory(mark, x - 1, y, playerid, stackCounter+1);
 			floodFindTerritory(mark, x + 1, y, playerid, stackCounter+1);
