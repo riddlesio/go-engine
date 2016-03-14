@@ -1,6 +1,5 @@
 package com.theaigames.go.testsuite;
 
-import com.theaigames.go.Processor;
 import com.theaigames.go.field.Field;
 
 public class Testsuite {

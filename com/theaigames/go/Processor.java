@@ -59,8 +59,6 @@ public class Processor implements GameHandler {
 		
 	}
 	
-	
-	
 	@Override
 	public void playRound(int roundNumber) {
 		System.out.println(String.format("playing round %d", roundNumber));

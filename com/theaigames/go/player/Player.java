@@ -2,7 +2,6 @@ package com.theaigames.go.player;
 
 import com.theaigames.engine.io.IOPlayer;
 import com.theaigames.game.player.AbstractPlayer;
-import com.theaigames.go.field.Field;
 
 public class Player extends AbstractPlayer {
 	int mId;
