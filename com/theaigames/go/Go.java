@@ -58,7 +58,8 @@ public class Go extends AbstractGame {
 	
 	public static void main(String args[]) throws Exception {
 		Go game = new Go();
-		game.TEST_BOT = "java -cp /home/joost/workspace/GoBot1/bin/ bot.BotStarter";
+		AbstractGame.DEV_MODE = false;
+		game.TEST_BOT = "java -cp /home/jim/workspace/go-starterbot/bin/ bot.BotStarter";
 		game.NUM_TEST_BOTS = 2;
 		game.setupEngine(args);
 		game.runEngine();

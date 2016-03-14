@@ -52,7 +52,7 @@ public abstract class AbstractGame implements Logic {
 	
 	public int maxRounds;
 	
-	public final static boolean DEV_MODE = false; // turn this on for local testing
+	public static boolean DEV_MODE = false; // turn this on for local testing
 	public String TEST_BOT; // command for the test bot in DEV_MODE
 	public int NUM_TEST_BOTS; // number of bots for this game
 	
@@ -159,6 +159,7 @@ public abstract class AbstractGame implements Logic {
 		
 		if(DEV_MODE) { // print the game file when in DEV_MODE
 			String playedGame = this.processor.getPlayedGame();
+//			System.out.println(this.engine.getPlayers().get(0).getDump());
 			System.out.println(playedGame);
 //			int score = this.processor.getRoundNumber() - 1;
 		} else { // save the game to database

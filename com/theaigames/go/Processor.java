@@ -24,8 +24,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.theaigames.game.player.AbstractPlayer;
-import com.theaigames.game.AbstractGame;
 import com.theaigames.game.GameHandler;
+import com.theaigames.go.Go;
 import com.theaigames.go.field.Field;
 import com.theaigames.go.moves.Move;
 import com.theaigames.go.moves.MoveResult;
@@ -48,7 +48,7 @@ public class Processor implements GameHandler {
 		mField = field;
 		mMoves = new ArrayList<Move>();
 		mMoveResults = new ArrayList<MoveResult>();
-		if (AbstractGame.DEV_MODE) {
+		if (Go.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
 			Testsuite t = new Testsuite();
 			//t.dbgTestKoRule(mField);
@@ -76,7 +76,7 @@ public class Processor implements GameHandler {
 					}
 				}
 				mMoveNumber++;
-				if (AbstractGame.DEV_MODE) {
+				if (Go.DEV_MODE) {
 					//mField.dumpBoard();
 				}
 			}
@@ -136,7 +136,7 @@ public class Processor implements GameHandler {
 		Move move = new Move(player);
 		move.setMove("move", mField.getLastX(), mField.getLastY());
 		move.setIllegalMove(mField.getLastError());
-		System.out.println(mField.getLastError());
+//		System.out.println(mField.getLastError());
 		mMoves.add(move);
 		
 		if (player.getId()==1) {
