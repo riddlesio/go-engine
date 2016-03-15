@@ -66,7 +66,7 @@ public class Go extends AbstractGame {
 //		game.TEST_BOT = "java -cp /home/jim/workspace/go-starterbot/bin/ bot.BotStarter";
 //		game.NUM_TEST_BOTS = 2;
 		game.setupEngine(args);
-		game.maxRounds = 199;
+		game.maxRounds = 149;
 		game.runEngine();
 	}
 
