@@ -13,6 +13,8 @@ public class Go extends AbstractGame {
 	
 	private final int TIMEBANK_MAX = 10000;
 	private final int TIME_PER_MOVE = 500;
+	private final int FIELD_HEIGHT = 19;
+	private final int FIELD_WIDTH = 19;
 	private List<Player> players;
 	private Field mField;
 
@@ -22,7 +24,7 @@ public class Go extends AbstractGame {
 		this.players = new ArrayList<Player>();
 		
 		// create the playing field
-		this.mField = new Field();
+		this.mField = new Field(FIELD_WIDTH, FIELD_HEIGHT);
 		
 		for(int i=0; i<ioPlayers.size(); i++) {
 			// create the player
@@ -46,6 +48,8 @@ public class Go extends AbstractGame {
 		player.sendSetting("player_names", playerString);
 		player.sendSetting("your_bot", player.getName());
 		player.sendSetting("your_botid", player.getId());
+		player.sendSetting("field_width", FIELD_WIDTH);
+		player.sendSetting("field_height", FIELD_HEIGHT);
 	}
 
 	@Override
@@ -58,10 +62,11 @@ public class Go extends AbstractGame {
 	
 	public static void main(String args[]) throws Exception {
 		Go game = new Go();
-		AbstractGame.DEV_MODE = false;
+		AbstractGame.DEV_MODE = true;
 		game.TEST_BOT = "java -cp /home/jim/workspace/go-starterbot/bin/ bot.BotStarter";
 		game.NUM_TEST_BOTS = 2;
 		game.setupEngine(args);
+		game.maxRounds = 199;
 		game.runEngine();
 	}
 

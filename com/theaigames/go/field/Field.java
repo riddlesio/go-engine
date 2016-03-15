@@ -16,9 +16,9 @@ public class Field {
 	private String mLastError = "";
 	private int mLastX = -1, mLastY = -1;
 	
-	public Field() {
-		mCols = 19;
-		mRows = 19;
+	public Field(int width, int height) {
+		mCols = width;
+		mRows = height;
 		mBoard = new int[mCols][mRows];
 		mPreviousBoards = new int[3][mCols][mRows];
 		mAffectedFields = new Boolean[mCols][mRows];
@@ -92,7 +92,7 @@ public class Field {
 			recordHistory();
 			return false;
 		}
-		if (!checkKoRule(x, y, move)) { /* Check Ko Rule */
+		if (!checkKoRule(x, y)) { /* Check Ko Rule */
 			mLastError = "Error: violation of Ko Rule";
 			/* Undo move */
 			for(int i=0; i<mBoard.length; i++)
@@ -111,19 +111,12 @@ public class Field {
 	 * @param args : int x, int y, int move
 	 * @return : true if legal move otherwise false
 	 */
-	private Boolean checkKoRule(int x, int y, int move) {
-		Boolean returnVal = true;
-		/* Make the move */
-		//mBoard[x][y] = move;
-		
+	private Boolean checkKoRule(int x, int y) {
 		/* If board is the same as 2 moves back, it is an illegal move. */
 		if (Util.compareBoards(mBoard, mPreviousBoards[1])) {
-			returnVal = false;
+			return false;
 		}
-		
-		/* Undo the move */
-		//mBoard[x][y] = 0;
-		return returnVal;
+		return true;
 	}
 	
 	/**
@@ -184,7 +177,7 @@ public class Field {
 					}
 					flood(mark, x, y, mBoard[x][y], 0);
 					if (mFoundLiberties == 0) { /* Group starves */
-						System.out.println("STARVE " + x + " " + y);
+//						System.out.println("STARVE " + x + " " + y);
 						for (int tx = 0; tx < mRows; tx++) {
 							for (int ty = 0; ty < mCols; ty++) {
 								if (mAffectedFields[tx][ty]) {
@@ -325,16 +318,17 @@ public class Field {
 	}
 	
 	/**
-	 * Checks whether the field is full
+	 * Checks whether there is any move available on the field
 	 * @param args : 
-	 * @return : Returns true when field is full, otherwise returns false.
+	 * @return : Returns true when there is no move available, otherwise returns false.
 	 */
 	public boolean boardIsFull() {
 		for (int x = 0; x < mCols; x++)
 			for (int y = 0; y < mRows; y++)
-				if (mBoard[x][y] == 0)
-					return false; // At least one cell is not filled
-		// All cells are filled
+				for (int playerId = 1; playerId <= 2; playerId++)
+				    if (mBoard[x][y] == 0 && checkSuicideRule(x, y, playerId))
+				        return false;
+		// No move can be played
 		return true;
 	}
 	

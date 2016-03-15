@@ -57,7 +57,7 @@ public abstract class AbstractGame implements Logic {
 	public int NUM_TEST_BOTS; // number of bots for this game
 	
 	public AbstractGame() {
-		maxRounds = 50; // set this later if there is a maximum amount of rounds for this game
+		maxRounds = -1; // set this later if there is a maximum amount of rounds for this game
 	}
 
 	/**
@@ -159,8 +159,10 @@ public abstract class AbstractGame implements Logic {
 		
 		if(DEV_MODE) { // print the game file when in DEV_MODE
 			String playedGame = this.processor.getPlayedGame();
-//			System.out.println(this.engine.getPlayers().get(0).getDump());
 			System.out.println(playedGame);
+//			System.out.println(this.engine.getPlayers().get(0).getDump());
+//			System.out.println(this.engine.getPlayers().get(0).getStderr());
+//			System.out.println(this.engine.getPlayers().get(1).getStderr());
 //			int score = this.processor.getRoundNumber() - 1;
 		} else { // save the game to database
 			try {
