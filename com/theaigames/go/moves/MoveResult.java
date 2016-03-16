@@ -4,25 +4,27 @@ import com.theaigames.go.field.Field;
 import com.theaigames.go.player.Player;
 
 public class MoveResult {
-	private int mMoveNumber = 0;
+	private int mRoundNumber;
 	private Player mPlayer;
 	private Move mMove;
-	private Field mField;
 	private String mString;
-	public int mStonesPlayer1 = 0, mStonesPlayer2 = 0;
-	public int mStonesTakenPlayer1 = 0, mStonesTakenPlayer2 = 0;
-	public int mScorePlayer1 = 0, mScorePlayer2 = 0;
+	private int totalStones[] = new int[2];
+	private int stonesTaken[] = new int[2];
+	private int totalScore[] = new int[2];
 
-	public MoveResult(Player player, Move move, Field field, int stonesPlayer1, int stonesPlayer2, int stonesTakenPlayer1, int stonesTakenPlayer2) {
+	public MoveResult(Player player, Player opponent, Move move, int roundNumber, Field field) {
+	    int pId = player.getId();
+	    int oId = opponent.getId();
+	    
 		mPlayer = player;
 		mMove = move;
-		mField = field;
-		mStonesPlayer1 = stonesPlayer1;
-		mStonesPlayer2 = stonesPlayer2;	
-		mStonesTakenPlayer1 = stonesTakenPlayer1;
-		mStonesTakenPlayer2 = stonesTakenPlayer2;		
-		mScorePlayer1 = field.calculateScore(1);
-		mScorePlayer2 = field.calculateScore(2);
+		mRoundNumber = roundNumber;
+		totalStones[pId] = field.getPlayerStones(pId);
+		totalStones[oId] = field.getPlayerStones(pId);
+		stonesTaken[pId] = field.getTotalStonesTaken(pId);
+		stonesTaken[oId] = field.getTotalStonesTaken(oId);
+		totalScore[pId] = field.getPlayerScore(pId);
+		totalScore[oId] = field.getPlayerScore(oId);
 		mString = field.toString();
 	}
 	
@@ -34,19 +36,23 @@ public class MoveResult {
 	    return mMove;
 	}
 	
-	public void setMoveNumber(int moveNumber) {
-		mMoveNumber = moveNumber;
+	public int getRoundNumber() {
+		return mRoundNumber;
 	}
 	
-	public int getMoveNumber() {
-		return mMoveNumber;
-	}
-	
-	public String getAction() {
-		return mMove.getAction();
-	}
-	
-	public String toString() {
+	public String getFieldString() {
 	    return mString;
+	}
+	
+	public int getTotalStones(int playerId) {
+	    return totalStones[playerId];
+	}
+	
+	public int getStonesTaken(int playerId) {
+	    return stonesTaken[playerId];
+	}
+	
+	public int getTotalScore(int playerId) {
+	    return totalScore[playerId];
 	}
 }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.theaigames.game.player.AbstractPlayer;
@@ -37,16 +38,14 @@ public class Processor implements GameHandler {
 	private int mMoveNumber = 1;
 	private int mRoundNumber = -1;
 	private List<Player> mPlayers;
-	private List<Move> mMoves;
 	private List<MoveResult> mMoveResults;
 	private Field mField;
-	private int mGameOverByPlayerErrorPlayerId = 0, mPassesInARow = 0;
-	private int mStonesTakenPlayer1, mStonesTakenPlayer2;
+	private Player mGameOverByPlayerErrorPlayer = null;
+	private int mPassesInARow = 0;
 
 	public Processor(List<Player> players, Field field) {
 		mPlayers = players;
 		mField = field;
-		mMoves = new ArrayList<Move>();
 		mMoveResults = new ArrayList<MoveResult>();
 		if (Go.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
@@ -65,14 +64,12 @@ public class Processor implements GameHandler {
 		mRoundNumber = roundNumber;
 		for (Player player : mPlayers) {
 			if (!isGameOver()) {
-				player.sendUpdate("round", roundNumber);
-				player.sendUpdate("move", mMoveNumber);
-				player.sendUpdate("field", mField.toString());
+			    sendUpdates(player);
 				String response = player.requestMove("move");
 				if (!parseResponse(response, player)) {
 					response = player.requestMove("move");
 					if (!parseResponse(response, player)) {
-					    mGameOverByPlayerErrorPlayerId = player.getId(); /* Too many errors, other player wins */
+					    mGameOverByPlayerErrorPlayer = player; /* Too many errors, other player wins */
 					}
 				}
 				mMoveNumber++;
@@ -81,6 +78,20 @@ public class Processor implements GameHandler {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Sends round updates to given player
+	 * @param player : player to send updates to
+	 */
+	private void sendUpdates(Player player) {
+	    Player opponent = getOpponent(player);
+	    
+	    player.sendUpdate("round", mRoundNumber);
+        player.sendUpdate("move", mMoveNumber);
+        player.sendUpdate("points", player, mField.getPlayerScore(player.getId()));
+        player.sendUpdate("points", opponent, mField.getPlayerScore(opponent.getId()));
+        player.sendUpdate("field", mField.toString());
 	}
 	
 	/**
@@ -115,9 +126,7 @@ public class Processor implements GameHandler {
 			} else {
 				move.setIllegalMove("Pass");
 			}
-			mMoves.add(move);
-			MoveResult moveResult = new MoveResult(player, move, mField, 10, 20, mStonesTakenPlayer1, mStonesTakenPlayer2);
-			moveResult.setMoveNumber(mMoveNumber);
+			MoveResult moveResult = new MoveResult(player, getOpponent(player), move, mRoundNumber, mField);
 			mMoveResults.add(moveResult);
 			return true;
 		} else {
@@ -136,16 +145,8 @@ public class Processor implements GameHandler {
 		Move move = new Move(player);
 		move.setMove("move", mField.getLastX(), mField.getLastY());
 		move.setIllegalMove(mField.getLastError());
-//		System.out.println(mField.getLastError());
-		mMoves.add(move);
 		
-		if (player.getId()==1) {
-			mStonesTakenPlayer1+= mField.getStonesTaken();
-		} else {
-			mStonesTakenPlayer2+= mField.getStonesTaken();
-		}
-		MoveResult moveResult = new MoveResult(player, move, mField, 10, 20, mStonesTakenPlayer1, mStonesTakenPlayer2);
-		moveResult.setMoveNumber(mMoveNumber);
+		MoveResult moveResult = new MoveResult(player, getOpponent(player), move, mRoundNumber, mField);
 
 		mMoveResults.add(moveResult);
 	}
@@ -157,6 +158,9 @@ public class Processor implements GameHandler {
 
 	@Override
 	public AbstractPlayer getWinner() {
+	    if (mGameOverByPlayerErrorPlayer != null)
+	        return getOpponent(mGameOverByPlayerErrorPlayer);
+	    
 		int scorePlayer1 = mField.calculateScore(1);
 		int scorePlayer2 = mField.calculateScore(2);
 		int winner = 0;
@@ -175,14 +179,7 @@ public class Processor implements GameHandler {
 	@Override
 	public String getPlayedGame() {
 		JSONObject output = new JSONObject();
-		AbstractPlayer winner = getWinner();
-		
-		String sWinner = "";
-		if (winner == null) {
-			sWinner = "none";
-		} else {
-			sWinner = winner.getName();
-		}
+
 		try {
 			JSONArray playerNames = new JSONArray();
 			for(Player player : this.mPlayers) {
@@ -196,67 +193,70 @@ public class Processor implements GameHandler {
 			.put("players", new JSONObject()
 					.put("count", this.mPlayers.size())
 					.put("names", playerNames))
-					.put("winnerplayer", sWinner)
 			);
 
 			JSONArray states = new JSONArray();
 			int counter = 0;
-			
-			for (MoveResult move : mMoveResults) {
-
-				JSONObject state = new JSONObject();
-				state.put("field", move.toString());
-				state.put("move", move.getMoveNumber());
-				state.put("action", move.getAction());
-				state.put("winner", "");
-				state.put("player", move.getPlayer().getId());
-				state.put("player1stones", move.mStonesPlayer1);
-				state.put("player2stones", move.mStonesPlayer2);
-				state.put("player1stonestaken", move.mStonesTakenPlayer1);
-				state.put("player2stonestaken", move.mStonesTakenPlayer2);
-				state.put("player1score", move.mScorePlayer1);
-				state.put("player2score", move.mScorePlayer2);
-				state.put("illegalMove", move.getMove().getIllegalMove());
-				states.put(state);
-				
+			for (MoveResult mr : mMoveResults) {
+				states.put(getOutputState(mr, false));
 				if (counter == mMoveResults.size()-1) { // final overlay state with winner
-					String winnerstring = "";
-					if (winner == null) {
-						winnerstring = "none";
-					} else {
-						winnerstring = winner.getName();
-					}
-					JSONObject state3 = new JSONObject();
-					state3.put("field", move.toString());
-					state3.put("move", move.getMoveNumber());
-					state3.put("winner", winnerstring);
-					state3.put("player", move.getPlayer().getId());
-					state3.put("player1stones", move.mStonesPlayer1);
-					state3.put("player2stones", move.mStonesPlayer2);
-					state3.put("player1stonestaken", move.mStonesTakenPlayer1);
-					state3.put("player2stonestaken", move.mStonesTakenPlayer2);
-					state3.put("player1score", move.mScorePlayer1);
-					state3.put("player2score", move.mScorePlayer2);
-					state3.put("illegalMove", move.getMove().getIllegalMove());
-					states.put(state3);
+					states.put(getOutputState(mr, true));
 				}
 				counter++;
 			}
 			output.put("states", states);
-		} catch (Exception e) {
+
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		return output.toString();
 	}
-
-
+	
+	private JSONObject getOutputState(MoveResult mr, boolean finalState) throws JSONException {
+	    JSONObject state = new JSONObject();
+	    AbstractPlayer winner = getWinner();
+	    
+	    String winnerstring = "";
+	    if (finalState) {
+            if (winner == null) {
+                winnerstring = "none";
+            } else {
+                winnerstring = winner.getName();
+            }
+	    }
+	    
+	    JSONArray players = new JSONArray();
+	    for (Player player : mPlayers) {
+	        int playerId = player.getId();
+	        JSONObject playerState = new JSONObject();
+	        
+	        playerState.put("stones", mr.getTotalStones(playerId));
+	        playerState.put("stonestaken", mr.getStonesTaken(playerId));
+	        playerState.put("score", mr.getTotalScore(playerId));
+	        
+	        players.put(playerState);
+	    }
+	    
+        state.put("field", mr.toString());
+        state.put("round", mr.getRoundNumber());
+        state.put("action", mr.getMove().getAction());
+        state.put("winner", winnerstring);
+        state.put("player", mr.getPlayer().getId());
+        state.put("players", players);
+        state.put("illegalMove", mr.getMove().getIllegalMove());
+        
+        return state;
+	}
+	
 	/**
-	 * Returns a List of Moves played in this game
-	 * @param args : 
-	 * @return : List with Move objects
+	 * Returns player's opponent given player
+	 * @param player : player to find its opponent for
+	 * @return : player's opponent
 	 */
-	public List<Move> getMoves() {
-		return mMoves;
+	private Player getOpponent(Player player) {
+	    if (mPlayers.get(0).equals(player))
+	        return mPlayers.get(1);
+	    return mPlayers.get(0);
 	}
 
 	public Field getField() {
@@ -265,6 +265,7 @@ public class Processor implements GameHandler {
 
 	@Override
 	public boolean isGameOver() {
-		return (!mField.isMoveAvailable() || mPassesInARow >=2);
+		return (!mField.isMoveAvailable() || mPassesInARow >=2 
+		        || mGameOverByPlayerErrorPlayer != null);
 	}
 }

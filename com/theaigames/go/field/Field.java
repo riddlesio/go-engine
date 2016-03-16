@@ -9,7 +9,8 @@ public class Field {
 	private Boolean[][] mAffectedFields; /* For checking groups */
 	private Boolean[][] mCheckedFields; /* For checking groups */
 
-	private int mStonesTaken;
+	private int[] mTotalStonesTaken;
+	private int[] mPlayerScores;
 	private Boolean mIsTerritory = false;
 	
 	private int mCols = 0, mRows = 0;
@@ -23,6 +24,9 @@ public class Field {
 		mPreviousBoards = new int[3][mCols][mRows];
 		mAffectedFields = new Boolean[mCols][mRows];
 		mCheckedFields = new Boolean[mCols][mRows];
+		mTotalStonesTaken = new int[2];
+		mTotalStonesTaken[0] = 0;
+		mTotalStonesTaken[1] = 0;
 		clearBoard();
 	}
 	
@@ -81,14 +85,13 @@ public class Field {
 		mLastX = x;
 		mLastY = y;
 
-		checkCaptures(move);
+		int stonesTaken = checkCaptures(move);
 		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
 			mLastError = "Error: illegal Suicide Move";
 			/* Undo move */
 			for(int i=0; i<mBoard.length; i++)
 				  for(int j=0; j<mBoard[0].length; j++)
 					  mBoard[i][j]=originalBoard[i][j];
-			mStonesTaken = 0;
 			recordHistory();
 			return false;
 		}
@@ -98,10 +101,11 @@ public class Field {
 			for(int i=0; i<mBoard.length; i++)
 				  for(int j=0; j<mBoard[0].length; j++)
 					  mBoard[i][j]=originalBoard[i][j];
-			mStonesTaken = 0;
 			recordHistory();
 			return false;
 		}
+		updateTotalStonesTaken(move, stonesTaken);
+		updatePlayerScores();
 		recordHistory();
 		return true;
 	}
@@ -162,8 +166,8 @@ public class Field {
 	 * @param args : 
 	 * @return : 
 	 */
-	private void checkCaptures(int move) {
-		mStonesTaken = 0;
+	private int checkCaptures(int move) {
+		int stonesTaken = 0;
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
 				if (mBoard[x][y] > 0 && mBoard[x][y] != move) {
@@ -182,7 +186,7 @@ public class Field {
 							for (int ty = 0; ty < mCols; ty++) {
 								if (mAffectedFields[tx][ty]) {
 									mBoard[tx][ty] = 0;
-									mStonesTaken++;
+									stonesTaken++;
 								}
 							}
 						}
@@ -190,6 +194,7 @@ public class Field {
 				}
 			}
 		}
+		return stonesTaken;
 	}
 	
 	/**
@@ -226,34 +231,34 @@ public class Field {
 		}
 	}
 	
-	private Boolean fieldHasLiberties(int x, int y) {
-		Boolean libertyLeft = true, libertyRight = true, libertyUp = true, libertyDown = true;
-		if (x == 0) {
-			libertyLeft = false;
-		} else {
-			if (mBoard[x-1][y] != 0) 
-				libertyLeft = false;
-		}
-		if (x == mCols-1) {
-			libertyRight = false;
-		} else {
-			if (mBoard[x+1][y] != 0) 
-				libertyRight = false;
-		}
-		if (y == 0) {
-			libertyUp = false;
-		} else {
-			if (mBoard[x][y-1] != 0) 
-				libertyUp = false;
-		}
-		if (y == mRows-1) {
-			libertyDown = false;
-		} else {
-			if (mBoard[x][y+1] != 0) 
-				libertyDown = false;
-		}
-		return (libertyLeft || libertyRight || libertyUp || libertyDown);
-	}
+//	private Boolean fieldHasLiberties(int x, int y) {
+//		Boolean libertyLeft = true, libertyRight = true, libertyUp = true, libertyDown = true;
+//		if (x == 0) {
+//			libertyLeft = false;
+//		} else {
+//			if (mBoard[x-1][y] != 0) 
+//				libertyLeft = false;
+//		}
+//		if (x == mCols-1) {
+//			libertyRight = false;
+//		} else {
+//			if (mBoard[x+1][y] != 0) 
+//				libertyRight = false;
+//		}
+//		if (y == 0) {
+//			libertyUp = false;
+//		} else {
+//			if (mBoard[x][y-1] != 0) 
+//				libertyUp = false;
+//		}
+//		if (y == mRows-1) {
+//			libertyDown = false;
+//		} else {
+//			if (mBoard[x][y+1] != 0) 
+//				libertyDown = false;
+//		}
+//		return (libertyLeft || libertyRight || libertyUp || libertyDown);
+//	}
 	
 	
 	/**
@@ -267,15 +272,6 @@ public class Field {
 	
 	public void setLastError(String error) {
 	    mLastError = error;
-	}
-	
-	/**
-	 * Returns number of stones taken in the last move
-	 * @param args : 
-	 * @return : int
-	 */
-	public int getStonesTaken() {
-		return mStonesTaken;
 	}
 	
 	/**
@@ -365,15 +361,9 @@ public class Field {
 	 * @return : int player score
 	 */
 	public int calculateScore(int playerId) {
-		int score = 0;
-		/* Calculate the number of stones a player has on the board */
-		for (int y = 0; y < mRows; y++) {
-			for (int x = 0; x < mCols; x++) {
-				if (mBoard[x][y] == playerId) {
-					score++;
-				}
-			}
-		}
+		int score = this.getPlayerStones(playerId);
+		if (score <= 0) return 0;
+		
 		/* Add empty points that reach only playerId color */
 		Boolean[][] mark = new Boolean[mRows][mCols];		
 		for (int x = 0; x < mRows; x++) {
@@ -475,6 +465,41 @@ public class Field {
 			}
 			System.out.print("\n");
 		}
+	}
+	
+	/**
+	 * Gets the amount of stones the given player has on the board
+	 * @param playerId : player id
+	 * @return : amount of stones on the board
+	 */
+	public int getPlayerStones(int playerId) {
+	    int stones = 0;
+	    for (int y = 0; y < mRows; y++) {
+            for (int x = 0; x < mCols; x++) {
+                if (mBoard[x][y] == playerId) {
+                    stones++;
+                }
+            }
+        }
+	    return stones;
+	}
+	
+	public void updateTotalStonesTaken(int playerId, int stonesTaken) {
+	    mTotalStonesTaken[playerId] += stonesTaken;
+	}
+	
+	public int getTotalStonesTaken(int playerId) {
+	    return mTotalStonesTaken[playerId];
+	}
+	
+	public void updatePlayerScores() {
+	    for (int id = 1; id <= 2; id++) {
+	        mPlayerScores[id] = calculateScore(id);
+	    }
+	}
+	
+	public int getPlayerScore(int playerId) {
+	    return mPlayerScores[playerId];
 	}
 }
 
