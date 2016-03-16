@@ -22,10 +22,7 @@ public class Go extends AbstractGame {
 	public void setupGame(ArrayList<IOPlayer> ioPlayers) throws Exception {			
 		// create all the players and everything they need
 		this.players = new ArrayList<Player>();
-		
-		// create the playing field
-		this.mField = new Field(FIELD_WIDTH, FIELD_HEIGHT);
-		
+
 		for(int i=0; i<ioPlayers.size(); i++) {
 			// create the player
 			String playerName = String.format("player%d", i+1);
@@ -36,6 +33,9 @@ public class Go extends AbstractGame {
 		for(Player player : this.players) {
 			sendSettings(player);
 		}
+		
+		// create the playing field
+        this.mField = new Field(FIELD_WIDTH, FIELD_HEIGHT, this.players);
 		
 		// create the processor
 		super.processor = new Processor(this.players, this.mField);

@@ -237,7 +237,7 @@ public class Processor implements GameHandler {
 	        players.put(playerState);
 	    }
 	    
-        state.put("field", mr.toString());
+        state.put("field", mr.getFieldString());
         state.put("round", mr.getRoundNumber());
         state.put("action", mr.getMove().getAction());
         state.put("winner", winnerstring);

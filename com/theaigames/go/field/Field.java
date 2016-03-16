@@ -1,5 +1,8 @@
 package com.theaigames.go.field;
 
+import java.util.List;
+
+import com.theaigames.go.player.Player;
 import com.theaigames.util.Util;
 
 public class Field {
@@ -17,18 +20,21 @@ public class Field {
 	private String mLastError = "";
 	private int mLastX = -1, mLastY = -1;
 	
-	public Field(int width, int height) {
+	public Field(int width, int height, List<Player> players) {
 		mCols = width;
 		mRows = height;
 		mBoard = new int[mCols][mRows];
 		mPreviousBoards = new int[3][mCols][mRows];
 		mAffectedFields = new Boolean[mCols][mRows];
 		mCheckedFields = new Boolean[mCols][mRows];
-		mTotalStonesTaken = new int[2];
-		mTotalStonesTaken[0] = 0;
-		mTotalStonesTaken[1] = 0;
-		mPlayerScores[0] = 0;
-		mPlayerScores[1] = 0;
+		
+		mTotalStonesTaken = new int[players.size() + 1];
+		mPlayerScores = new int[players.size() + 1];
+		for (Player player : players) {
+		    mTotalStonesTaken[player.getId()] = 0;
+		    mPlayerScores[player.getId()] = 0;
+		}
+		
 		clearBoard();
 	}
 	

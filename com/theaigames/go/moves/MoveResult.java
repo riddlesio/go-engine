@@ -8,9 +8,9 @@ public class MoveResult {
 	private Player mPlayer;
 	private Move mMove;
 	private String mString;
-	private int totalStones[] = new int[2];
-	private int stonesTaken[] = new int[2];
-	private int totalScore[] = new int[2];
+	private int totalStones[] = new int[3];
+	private int stonesTaken[] = new int[3];
+	private int totalScore[] = new int[3];
 
 	public MoveResult(Player player, Player opponent, Move move, int roundNumber, Field field) {
 	    int pId = player.getId();
