@@ -27,6 +27,8 @@ public class Field {
 		mTotalStonesTaken = new int[2];
 		mTotalStonesTaken[0] = 0;
 		mTotalStonesTaken[1] = 0;
+		mPlayerScores[0] = 0;
+		mPlayerScores[1] = 0;
 		clearBoard();
 	}
 	
@@ -326,16 +328,6 @@ public class Field {
 				        return false;
 		// No move can be played
 		return true;
-	}
-	
-	/**
-	 * Checks if there is a winner, if so, returns player id.
-	 * @param args : 
-	 * @return : Returns player id if there is a winner, otherwise returns 0.
-	 */
-	public int getWinner() {
-		// TODO: implement this
-		return 0;
 	}
 
 	public int getNrColumns() {
