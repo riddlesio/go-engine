@@ -360,7 +360,11 @@ public class Field {
 	 */
 	public int calculateScore(int playerId) {
 		int score = this.getPlayerStones(playerId);
+		
 		if (score <= 0) return 0;
+		if (this.getPlayerStones(2 - playerId + 1) <= 0) { // opponent stones <= 0
+		    return score;
+		}
 		
 		/* Add empty points that reach only playerId color */
 		Boolean[][] mark = new Boolean[mRows][mCols];		

@@ -20,7 +20,7 @@ public class MoveResult {
 		mMove = move;
 		mRoundNumber = roundNumber;
 		totalStones[pId] = field.getPlayerStones(pId);
-		totalStones[oId] = field.getPlayerStones(pId);
+		totalStones[oId] = field.getPlayerStones(oId);
 		stonesTaken[pId] = field.getTotalStonesTaken(pId);
 		stonesTaken[oId] = field.getTotalStonesTaken(oId);
 		totalScore[pId] = field.getPlayerScore(pId);
