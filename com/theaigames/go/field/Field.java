@@ -120,13 +120,11 @@ public class Field {
 		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
 			mLastError = "Error: illegal Suicide Move";
 			mBoard = originalBoard;
-			recordHistory();
 			return false;
 		}
 		if (!checkKoRule()) { /* Check Ko Rule */
 			mLastError = "Error: violation of Ko Rule";
 			mBoard = originalBoard;
-			recordHistory();
 			return false;
 		}
 		updateTotalStonesTaken(move, stonesTaken);
