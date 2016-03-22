@@ -1,5 +1,23 @@
+// Copyright 2016 theaigames.com (developers@theaigames.com)
+
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+
+//        http://www.apache.org/licenses/LICENSE-2.0
+
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//	
+//    For the full copyright and license information, please view the LICENSE
+//    file that was distributed with this source code.
+
 package com.theaigames.go.field;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.theaigames.go.player.Player;
@@ -7,7 +25,7 @@ import com.theaigames.util.Util;
 
 public class Field {
 	private int[][] mBoard;
-	private int[][][] mPreviousBoards; /* For checking Ko rule */
+	private ArrayList<int[][]> mPreviousBoards; /* For checking Ko rule */
 	private int mFoundLiberties, mNrAffectedFields; /* For checking groups */
 	private Boolean[][] mAffectedFields; /* For checking groups */
 	private Boolean[][] mCheckedFields; /* For checking groups */
@@ -24,7 +42,7 @@ public class Field {
 		mCols = width;
 		mRows = height;
 		mBoard = new int[mCols][mRows];
-		mPreviousBoards = new int[3][mCols][mRows];
+		mPreviousBoards = new ArrayList<int[][]>();
 		mAffectedFields = new Boolean[mCols][mRows];
 		mCheckedFields = new Boolean[mCols][mRows];
 		
@@ -36,6 +54,14 @@ public class Field {
 		}
 		
 		clearBoard();
+	}
+	
+	public int[][] cloneBoard() {
+		int[][] clone = new int[mCols][mRows];
+		for(int y = 0; y < mRows; y++)
+			  for(int x = 0; x < mCols; x++)
+				  clone[x][y] = mBoard[x][y];
+		return clone;
 	}
 	
 	public void clearBoard() {
@@ -74,10 +100,7 @@ public class Field {
 	 * @return : true if legal move otherwise false
 	 */
 	public Boolean addMove(int x, int y, int move) {
-		int[][] originalBoard = new int[mBoard.length][mBoard[0].length];
-		for(int i=0; i<mBoard.length; i++)
-			  for(int j=0; j<mBoard[0].length; j++)
-				  originalBoard[i][j]=mBoard[i][j];
+		int[][] originalBoard = cloneBoard();
 		mLastError = "";
 		/* Check legality of move */
 		if (x < 0 || x >= mCols || y >= mRows || y < 0) { /* Move out of bounds */
@@ -96,19 +119,13 @@ public class Field {
 		int stonesTaken = checkCaptures(move);
 		if (!checkSuicideRule(x, y, move)) { /* Check Suicide Rule */
 			mLastError = "Error: illegal Suicide Move";
-			/* Undo move */
-			for(int i=0; i<mBoard.length; i++)
-				  for(int j=0; j<mBoard[0].length; j++)
-					  mBoard[i][j]=originalBoard[i][j];
+			mBoard = originalBoard;
 			recordHistory();
 			return false;
 		}
-		if (!checkKoRule(x, y)) { /* Check Ko Rule */
+		if (!checkKoRule()) { /* Check Ko Rule */
 			mLastError = "Error: violation of Ko Rule";
-			/* Undo move */
-			for(int i=0; i<mBoard.length; i++)
-				  for(int j=0; j<mBoard[0].length; j++)
-					  mBoard[i][j]=originalBoard[i][j];
+			mBoard = originalBoard;
 			recordHistory();
 			return false;
 		}
@@ -119,14 +136,12 @@ public class Field {
 	}
 	
 	/**
-	 * Checks the Ko Rule. (A move that returns the game to the previous position)
-	 * @param args : int x, int y, int move
+	 * Checks the (Super) Ko Rule. (A move that returns the game to the previous position)
 	 * @return : true if legal move otherwise false
 	 */
-	private Boolean checkKoRule(int x, int y) {
-		/* If board is the same as 2 moves back, it is an illegal move. */
-		if (Util.compareBoards(mBoard, mPreviousBoards[1])) {
-			return false;
+	private Boolean checkKoRule() {
+		for (int[][] previousBoard : mPreviousBoards) {
+			if (Util.compareBoards(mBoard, previousBoard)) return false;
 		}
 		return true;
 	}
@@ -155,18 +170,7 @@ public class Field {
 	 * @return : 
 	 */
 	private void recordHistory() {
-		for (int i = 0; i < mPreviousBoards.length-1; i++) {			
-			for (int x = 0; x < mRows; x++) {
-				for (int y = 0; y < mCols; y++) {
-					mPreviousBoards[i][x][y] = mPreviousBoards[i+1][x][y];
-				}
-			}
-		}
-		for (int x = 0; x < mRows; x++) {
-			for (int y = 0; y < mCols; y++) {
-				mPreviousBoards[mPreviousBoards.length-1][x][y] = mBoard[x][y];
-			}
-		}
+		mPreviousBoards.add(cloneBoard());
 	}
 
 	/**

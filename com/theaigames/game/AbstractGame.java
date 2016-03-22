@@ -1,4 +1,4 @@
-// Copyright 2015 theaigames.com (developers@theaigames.com)
+// Copyright 2016 theaigames.com (developers@theaigames.com)
 
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ public abstract class AbstractGame implements Logic {
 	public boolean isGameOver()
 	{
 		if (this.processor.isGameOver() 
-				|| (this.maxRounds >= 0 && this.processor.getRoundNumber() > this.maxRounds) ) {
+				|| (this.maxRounds >= 0 && this.processor.getRoundNumber() >= this.maxRounds) ) {
         	return true;
         }
         return false;
@@ -184,7 +184,7 @@ public abstract class AbstractGame implements Logic {
 		
 		AbstractPlayer winner = this.processor.getWinner();
 		ObjectId winnerId = null;
-		int score = this.processor.getRoundNumber() - 1;
+		int score = this.processor.getRoundNumber();
 		BasicDBObject errors = new BasicDBObject();
 		BasicDBObject dumps = new BasicDBObject();
 		String gamePath = "games/" + this.gameIdString;
