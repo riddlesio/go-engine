@@ -24,34 +24,39 @@ import com.theaigames.go.player.Player;
 import com.theaigames.util.Util;
 
 public class Field {
+	private final int KO_SEARCH_DEPTH = 30;
+	
 	private int[][] mBoard;
+	private double mKomi;
 	private ArrayList<int[][]> mPreviousBoards; /* For checking Ko rule */
 	private int mFoundLiberties, mNrAffectedFields; /* For checking groups */
 	private Boolean[][] mAffectedFields; /* For checking groups */
 	private Boolean[][] mCheckedFields; /* For checking groups */
 
 	private int[] mTotalStonesTaken;
-	private int[] mPlayerScores;
+	private double[] mPlayerScores;
 	private Boolean mIsTerritory = false;
 	
 	private int mCols = 0, mRows = 0;
 	private String mLastError = "";
 	private int mLastX = -1, mLastY = -1;
 	
-	public Field(int width, int height, List<Player> players) {
+	public Field(int width, int height, double komi, List<Player> players) {
 		mCols = width;
 		mRows = height;
+		mKomi = komi;
 		mBoard = new int[mCols][mRows];
 		mPreviousBoards = new ArrayList<int[][]>();
 		mAffectedFields = new Boolean[mCols][mRows];
 		mCheckedFields = new Boolean[mCols][mRows];
 		
 		mTotalStonesTaken = new int[players.size() + 1];
-		mPlayerScores = new int[players.size() + 1];
+		mPlayerScores = new double[players.size() + 1];
 		for (Player player : players) {
 		    mTotalStonesTaken[player.getId()] = 0;
 		    mPlayerScores[player.getId()] = 0;
 		}
+		mPlayerScores[2] += mKomi;
 		
 		clearBoard();
 	}
@@ -107,10 +112,15 @@ public class Field {
 			mLastError = "Error: move out of bounds";
 			return false;
 		}
-		if (mBoard[x][y] != 0) { /*Field is not available */
+		if (mBoard[x][y] > 0) { /*Field is not available */
 			mLastError = "Error: chosen position is already filled";
 			return false;
 		}
+		if (mBoard[x][y] < 0) { /* Check Ko Rule */
+			mLastError = "Error: violation of Ko Rule";
+			return false;
+		}
+		
 		/* Field is available */
 		mBoard[x][y] = move;
 		mLastX = x;
@@ -122,26 +132,32 @@ public class Field {
 			mBoard = originalBoard;
 			return false;
 		}
-		if (!checkKoRule()) { /* Check Ko Rule */
-			mLastError = "Error: violation of Ko Rule";
-			mBoard = originalBoard;
-			return false;
-		}
 		updateTotalStonesTaken(move, stonesTaken);
 		updatePlayerScores();
+		updateBoardWithKo();
 		recordHistory();
 		return true;
 	}
 	
 	/**
-	 * Checks the (Super) Ko Rule. (A move that returns the game to the previous position)
-	 * @return : true if legal move otherwise false
+	 * Adds Ko positions to board
 	 */
-	private Boolean checkKoRule() {
-		for (int[][] previousBoard : mPreviousBoards) {
-			if (Util.compareBoards(mBoard, previousBoard)) return false;
+	private void updateBoardWithKo() {
+		for (int x = 0; x < mRows; x++) {
+			for (int y = 0; y < mCols; y++) {
+				if (mBoard[x][y] < 0) {
+					mBoard[x][y] = 0;
+				}
+				if (mBoard[x][y] == 0) {
+					for (int[][] previousBoard : mPreviousBoards) {
+						if (Util.compareBoards(mBoard, previousBoard)) {
+							mBoard[x][y] = -1;
+							break;
+						}
+					}
+				}
+			}
 		}
-		return true;
 	}
 	
 	/**
@@ -168,6 +184,8 @@ public class Field {
 	 * @return : 
 	 */
 	private void recordHistory() {
+		if (mPreviousBoards.size() >= KO_SEARCH_DEPTH)
+			mPreviousBoards.remove(0);
 		mPreviousBoards.add(cloneBoard());
 	}
 
@@ -224,7 +242,7 @@ public class Field {
 		
 		// Make sure this field is the right color to fill
 		if (mBoard[x][y] != srcColor) {
-			if (mBoard[x][y] == 0) { mFoundLiberties++; }
+			if (mBoard[x][y] <= 0) { mFoundLiberties++; }
 			return;
 		}
 		
@@ -379,7 +397,7 @@ public class Field {
 		mNrAffectedFields = 0;
 		for (int y = 0; y < mRows; y++) {
 			for (int x = 0; x < mCols; x++) {
-				if (mBoard[x][y] == 0 && mCheckedFields[x][y] == false) {
+				if (mBoard[x][y] <= 0 && mCheckedFields[x][y] == false) {
 					for (int tx = 0; tx < mRows; tx++) {
 						for (int ty = 0; ty < mCols; ty++) {
 							mAffectedFields[tx][ty] = false;
@@ -500,9 +518,10 @@ public class Field {
 	    for (int id = 1; id <= 2; id++) {
 	        mPlayerScores[id] = calculateScore(id);
 	    }
+	    mPlayerScores[2] += mKomi;
 	}
 	
-	public int getPlayerScore(int playerId) {
+	public double getPlayerScore(int playerId) {
 	    return mPlayerScores[playerId];
 	}
 }

@@ -34,7 +34,11 @@ public final class Util {
 	public static Boolean compareBoards(int[][] b1, int[][] b2) {
 		for (int x = 0; x < b1.length; x++) {
 			for (int y = 0; y < b1[0].length; y++) {
-				if (b1[x][y] != b2[x][y]) return false;
+				int v1 = b1[x][y];
+				int v2 = b2[x][y];
+				if (v1 < 0) v1 = 0;
+				if (v2 < 0) v2 = 0;
+				if (v1 != v2) return false;
 			}
 		}
 		return true;

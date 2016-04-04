@@ -72,6 +72,7 @@ public class Processor implements GameHandler {
 					    mGameOverByPlayerErrorPlayer = player; /* Too many errors, other player wins */
 					}
 				}
+				player.setLastMove(response);
 				mMoveNumber++;
 				if (Go.DEV_MODE) {
 					//mField.dumpBoard();
@@ -89,9 +90,10 @@ public class Processor implements GameHandler {
 	    
 	    player.sendUpdate("round", mRoundNumber);
         player.sendUpdate("move", mMoveNumber);
-        player.sendUpdate("points", player, mField.getPlayerScore(player.getId()));
-        player.sendUpdate("points", opponent, mField.getPlayerScore(opponent.getId()));
+        player.sendUpdate("points", player, mField.getPlayerScore(player.getId()) + "");
+        player.sendUpdate("points", opponent, mField.getPlayerScore(opponent.getId()) + "");
         player.sendUpdate("field", mField.toString());
+        player.sendUpdate("last_move", opponent, opponent.getLastMove());
 	}
 	
 	/**

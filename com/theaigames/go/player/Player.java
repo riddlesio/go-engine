@@ -21,13 +21,25 @@ import com.theaigames.engine.io.IOPlayer;
 import com.theaigames.game.player.AbstractPlayer;
 
 public class Player extends AbstractPlayer {
+	
 	int mId;
+	String mLastMove;
+	
 	public Player(String name, IOPlayer bot, long maxTimeBank, long timePerMove, int id) {
 		super(name, bot, maxTimeBank, timePerMove);
 		mId = id;
+		mLastMove = "Null";
 	}
 
 	public int getId() {
 		return mId;
+	}
+	
+	public void setLastMove(String lastMove) {
+		mLastMove = lastMove;
+	}
+	
+	public String getLastMove() {
+		return mLastMove;
 	}
 }

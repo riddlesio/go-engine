@@ -27,7 +27,7 @@ public class MoveResult {
 	private String mString;
 	private int totalStones[] = new int[3];
 	private int stonesTaken[] = new int[3];
-	private int totalScore[] = new int[3];
+	private double totalScore[] = new double[3];
 
 	public MoveResult(Player player, Player opponent, Move move, int roundNumber, Field field) {
 	    int pId = player.getId();
@@ -69,7 +69,7 @@ public class MoveResult {
 	    return stonesTaken[playerId];
 	}
 	
-	public int getTotalScore(int playerId) {
+	public double getTotalScore(int playerId) {
 	    return totalScore[playerId];
 	}
 }
