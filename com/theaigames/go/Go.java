@@ -82,9 +82,9 @@ public class Go extends AbstractGame {
 	
 	public static void main(String args[]) throws Exception {
 		Go game = new Go();
-		AbstractGame.DEV_MODE = true;
-		game.TEST_BOT = "java -cp /home/jim/workspace/go-starterbot/bin/ bot.BotStarter";
-		game.NUM_TEST_BOTS = 2;
+//		AbstractGame.DEV_MODE = true;
+//		game.TEST_BOT = "java -cp /home/jim/workspace/go-starterbot/bin/ bot.BotStarter";
+//		game.NUM_TEST_BOTS = 2;
 		game.setupEngine(args);
 		game.maxRounds = MAX_ROUNDS;
 		game.runEngine();
