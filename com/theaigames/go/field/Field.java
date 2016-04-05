@@ -134,7 +134,7 @@ public class Field {
 		}
 		updateTotalStonesTaken(move, stonesTaken);
 		updatePlayerScores();
-		updateBoardWithKo();
+		updateBoardWithKo(Math.abs(move - 3)); // update for opponent
 		recordHistory();
 		return true;
 	}
@@ -142,22 +142,40 @@ public class Field {
 	/**
 	 * Adds Ko positions to board
 	 */
-	private void updateBoardWithKo() {
+	private void updateBoardWithKo(int playerId) {
 		for (int x = 0; x < mRows; x++) {
 			for (int y = 0; y < mCols; y++) {
 				if (mBoard[x][y] < 0) {
 					mBoard[x][y] = 0;
 				}
 				if (mBoard[x][y] == 0) {
+					if (!hasNeighbors(x, y)) continue; // speed it up a bit
+					
+					int[][] originalBoard = cloneBoard();
+					boolean koFound = false;
+					mBoard[x][y] = playerId;
+					checkCaptures(playerId);
 					for (int[][] previousBoard : mPreviousBoards) {
 						if (Util.compareBoards(mBoard, previousBoard)) {
-							mBoard[x][y] = -1;
+							koFound = true;
 							break;
 						}
+					}
+					mBoard = originalBoard;
+					if (koFound) {
+						mBoard[x][y] = -1;
 					}
 				}
 			}
 		}
+	}
+	
+	private Boolean hasNeighbors(int x, int y) {
+		if (x > 0 			&& mBoard[x - 1][y] > 0) return true;
+		if (x < mCols - 1 	&& mBoard[x + 1][y] > 0) return true;
+		if (y > 0 			&& mBoard[x][y - 1] > 0) return true;
+		if (y < mRows - 1   && mBoard[x][y + 1] > 0) return true;
+		return false;
 	}
 	
 	/**
@@ -338,8 +356,11 @@ public class Field {
 				counter++;
 			}
 		}
+//		System.out.println(r);
 		return r;
 	}
+	
+	
 	
 	/**
 	 * Checks whether there is any move available on the field

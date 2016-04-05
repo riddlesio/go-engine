@@ -158,8 +158,8 @@ public abstract class AbstractGame implements Logic {
 		Thread.sleep(100);
 		
 		if(DEV_MODE) { // print the game file when in DEV_MODE
-			String playedGame = this.processor.getPlayedGame();
-			System.out.println(playedGame);
+//			String playedGame = this.processor.getPlayedGame();
+//			System.out.println(playedGame);
 //			System.out.println(this.engine.getPlayers().get(0).getDump());
 //			System.out.println(this.engine.getPlayers().get(0).getStderr());
 //			System.out.println(this.engine.getPlayers().get(1).getStderr());

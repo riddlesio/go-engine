@@ -49,13 +49,12 @@ public class Processor implements GameHandler {
 		mMoveResults = new ArrayList<MoveResult>();
 		if (Go.DEV_MODE) {
 			System.out.println("Running in DEV_MODE");
-			Testsuite t = new Testsuite();
+			//Testsuite t = new Testsuite();
 			//t.dbgTestKoRule(mField);
 			//t.dbgTestCapture(mField);
 			//t.dbgTestSuicideRule(mField);
-			t.dbgTestScore(mField);
+			//t.dbgTestScore(mField);
 		}
-		
 	}
 	
 	@Override
@@ -74,9 +73,9 @@ public class Processor implements GameHandler {
 				}
 				player.setLastMove(response);
 				mMoveNumber++;
-				if (Go.DEV_MODE) {
+				//if (Go.DEV_MODE) {
 					//mField.dumpBoard();
-				}
+				//}
 			}
 		}
 	}

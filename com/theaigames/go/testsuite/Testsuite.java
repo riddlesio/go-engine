@@ -22,16 +22,57 @@ import com.theaigames.go.field.Field;
 public class Testsuite {
 	
 	public void dbgTestKoRule(Field field) {
+		field.addMove(0, 0, 1);
+		field.addMove(1, 0, 1);
 		field.addMove(2, 0, 1);
-		field.addMove(1, 1, 1);
-		field.addMove(2, 2, 1);
+		field.addMove(3, 0, 1);
+		field.addMove(4, 0, 1);
+		field.addMove(5, 0, 1);
+		field.addMove(6, 0, 1);
+		field.addMove(6, 1, 1);
+		field.addMove(6, 2, 1);
 		
-		field.addMove(3, 0, 2);
+		field.addMove(0, 1, 2);
+		field.addMove(1, 1, 2);
 		field.addMove(2, 1, 2);
-		field.addMove(3, 2, 2);
+		field.addMove(3, 1, 2);
 		field.addMove(4, 1, 2);
-		field.addMove(3, 1, 1);
-		field.addMove(2, 1, 2);
+		field.addMove(5, 1, 2);
+		field.addMove(5, 2, 2);
+		
+		field.addMove(0, 5, 2);
+		field.addMove(1, 5, 2);
+		field.addMove(2, 5, 2);
+		field.addMove(3, 5, 2);
+		field.addMove(4, 5, 2);
+		field.addMove(5, 5, 2);
+		field.addMove(6, 5, 2);
+		field.addMove(6, 4, 2);
+		field.addMove(6, 3, 2);
+		
+		field.addMove(0, 4, 1);
+		field.addMove(1, 4, 1);
+		field.addMove(2, 4, 1);
+		field.addMove(3, 4, 1);
+		field.addMove(4, 4, 1);
+		field.addMove(5, 4, 1);
+		field.addMove(5, 3, 1);
+		
+		field.addMove(1, 2, 2);
+		field.addMove(1, 3, 1);
+		field.addMove(3, 2, 2);
+		field.addMove(3, 3, 1);
+		
+		field.addMove(0, 2, 1);
+		field.addMove(2, 2, 1);
+		field.addMove(4, 3, 2);
+		field.addMove(0, 3, 2);
+		field.addMove(4, 2, 1);
+		field.addMove(2, 3, 2);
+		field.addMove(0, 2, 1);
+		field.addMove(4, 3, 2);
+		field.addMove(2, 2, 1);
+
 		System.out.println(field.getLastError());
 
 		/* TODO: Assert field state */
