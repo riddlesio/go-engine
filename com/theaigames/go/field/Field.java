@@ -134,7 +134,7 @@ public class Field {
 		}
 		updateTotalStonesTaken(move, stonesTaken);
 		updatePlayerScores();
-		updateBoardWithKo(Math.abs(move - 3)); // update for opponent
+		updateBoardWithKo(2 - move + 1); // update for opponent
 		recordHistory();
 		return true;
 	}
@@ -404,7 +404,9 @@ public class Field {
 		
 		if (score <= 0) return 0;
 		if (this.getPlayerStones(2 - playerId + 1) <= 0) { // opponent stones <= 0
-		    return score;
+			if (score <= 1) return score;
+			
+			return mCols * mRows;
 		}
 		
 		/* Add empty points that reach only playerId color */
