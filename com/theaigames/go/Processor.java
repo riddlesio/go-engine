@@ -162,18 +162,14 @@ public class Processor implements GameHandler {
 	    if (mGameOverByPlayerErrorPlayer != null)
 	        return getOpponent(mGameOverByPlayerErrorPlayer);
 	    
-		int scorePlayer1 = mField.calculateScore(1);
-		int scorePlayer2 = mField.calculateScore(2);
-		int winner = 0;
-		if (scorePlayer1 > scorePlayer2) winner = 1;
-		if (scorePlayer2 > scorePlayer1) winner = 2;
-		if (winner != 0) {
-			for (Player player : mPlayers) {
-				if (player.getId() == winner) {
-					return player;
-				}
-			}
-		}
+	    int p1Index = 0;
+	    int p2Index = 1;
+		double scorePlayer1 = mField.getPlayerScore(mPlayers.get(p1Index).getId());
+		double scorePlayer2 = mField.getPlayerScore(mPlayers.get(p2Index).getId());
+
+		if (scorePlayer1 > scorePlayer2) return mPlayers.get(p1Index);
+		if (scorePlayer2 > scorePlayer1) return mPlayers.get(p2Index);
+
 		return null;
 	}
 
