@@ -1,0 +1,16 @@
+place_move 5 5
+place_move 6 5
+place_move 7 5
+place_move 7 6
+place_move 7 7
+place_move 6 7
+place_move 5 7
+place_move 4 7
+place_move 4 6
+place_move 4 5
+place_move 5 9
+place_move 5 5
+place_move 8 15
+place_move 14 3
+place_move 8 13
+place_move 7 2
