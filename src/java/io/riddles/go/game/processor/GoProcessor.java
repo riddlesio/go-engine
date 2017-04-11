@@ -50,7 +50,6 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
     @Override
     public GoState createNextStateFromResponse(GoState state, PlayerResponse input, int roundNumber) {
 
-
         /* Clone playerStates for next State */
         ArrayList<GoPlayerState> nextPlayerStates = clonePlayerStates(state.getPlayerStates());
 
@@ -60,13 +59,9 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
         GoPlayerState playerState = getActivePlayerState(nextPlayerStates, input.getPlayerId());
         playerState.setPlayerId(input.getPlayerId());
 
-
         // parse the response
         GoMoveDeserializer deserializer = new GoMoveDeserializer();
         GoMove move = deserializer.traverse(input.getValue());
-        if (move.getException() != null) {
-            //System.out.println("EXCEPTION '" + input.getValue() + "' " + move.getException().toString());
-        }
         playerState.setMove(move);
 
         try {
@@ -102,15 +97,13 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
             nextState.setKoPlayerId(input.getPlayerId());
         }
 
-
         /* Update player stats */
         playerState.setStones(nextState.getBoard().getPlayerStones(playerState.getPlayerId()));
         playerState.updateTotalStonesTaken(move.getStonesTaken());
 
         nextPlayerStates.get(0).setScore(logic.calculateScore(nextState.getBoard(), nextPlayerStates.get(0).getPlayerId()));
         nextPlayerStates.get(1).setScore(logic.calculateScore(nextState.getBoard(), nextPlayerStates.get(1).getPlayerId()));
-        nextState.setPlayerstates((ArrayList)nextPlayerStates);
-        //nextState.getBoard().dumpBoard();
+        nextState.setPlayerstates(nextPlayerStates);
 
         return nextState;
     }
@@ -131,13 +124,16 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
         return nextPlayerStates;
     }
 
-
     @Override
     public void sendUpdates(GoState state, GoPlayer player) {
         player.sendUpdate("round", state.getRoundNumber());
         player.sendUpdate("field", state.getBoard().toString());
-    }
 
+        for (GoPlayerState playerState : state.getPlayerStates()) {
+            GoPlayer otherPlayer = this.playerProvider.getPlayerById(playerState.getPlayerId());
+            player.sendUpdate("points", otherPlayer, "" + playerState.getScore());
+        }
+    }
 
     @Override
     public boolean hasGameEnded(GoState state) {
@@ -180,13 +176,11 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
 
     @Override
     public double getScore(GoState state) {
-        return state.getRoundNumber();
+        return state.getRoundNumber() - 1;
     }
 
     @Override
     public Enum getActionType(GoState goState, AbstractPlayerState playerState) {
         return ActionType.MOVE;
     }
-
-
 }

@@ -19,7 +19,6 @@
 
 package io.riddles.go.game.state;
 
-import io.riddles.go.game.board.GoBoard;
 import io.riddles.go.game.move.GoMove;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +48,6 @@ public class GoStateSerializer extends AbstractStateSerializer<GoState> {
 
     private JSONObject visitState(GoState state) throws NullPointerException {
         JSONObject stateJSON = new JSONObject();
-        GoBoard board = state.getBoard();
 
         stateJSON.put("round", state.getRoundNumber() + 1);
         stateJSON.put("field", state.getBoard().toString());
@@ -69,7 +67,7 @@ public class GoStateSerializer extends AbstractStateSerializer<GoState> {
         if (move != null) {
             moveString = move.toString();
             if (move.getException() != null)
-                exceptionString = move.getException().toString();
+                exceptionString = move.getException().getMessage();
         }
         stateJSON.put("action", moveString);
         stateJSON.put("illegalMove", exceptionString);

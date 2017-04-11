@@ -1,0 +1,19 @@
+{
+  "wrapper": {
+    "timebankMax": 10000,
+    "timePerMove": 200,
+    "maxTimeouts": 0,
+    "resultFile": "./resultfile.json",
+    "debug": true
+  },
+  "match": {
+    "bots": [{
+      "command": "java -cp /home/jim/workspace/go-starterbot/build/classes/main bot.BotStarter"
+    },{
+      "command": "java -cp /home/jim/workspace/go-starterbot/build/classes/main bot.BotStarter"
+    }],
+    "engine": {
+      "command": "java -jar /home/jim/workspace/go-engine/build/libs/go-1.0.0.jar"
+    }
+  }
+}

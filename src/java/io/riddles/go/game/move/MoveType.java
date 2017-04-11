@@ -17,35 +17,20 @@
  *     file that was distributed with this source code.
  */
 
-package io.riddles.go.game.player;
-
-import io.riddles.javainterface.game.player.AbstractPlayer;
+package io.riddles.go.game.move;
 
 /**
- * io.riddles.catchfrauds.game.player.BookingGameMovePlayer - Created on 3-6-16
+ * io.riddles.go.game.move.MoveType
  *
- * [description]
+ * All move types
  *
- * @author Joost de Meij - joost@riddles.io, Jim van Eeden - jim@riddles.io
+ * @author Jim van Eeden <jim@riddles.io>
  */
-public class GoPlayer extends AbstractPlayer {
-
-
-    public GoPlayer(int id) {
-        super(id);
-    }
-
-
-    public GoPlayer clone() {
-        GoPlayer playerClone = new GoPlayer(this.getId());
-        return playerClone;
-    }
-
-
-
+public enum MoveType {
+    PLACE,
+    PASS;
 
     public String toString() {
-        return "Player " + this.getId();
+        return this.name().toLowerCase();
     }
-
 }

@@ -1,3 +1,22 @@
+/*
+ * Copyright 2016 riddles.io (developers@riddles.io)
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+ *     For the full copyright and license information, please view the LICENSE
+ *     file that was distributed with this source code.
+ */
+
 package io.riddles.go.game.board;
 
 
@@ -12,12 +31,10 @@ public class GoBoard {
 
     private final int KO_SEARCH_DEPTH = 30;
 
-
     protected String[][] field;
     protected int width = 19;
     protected int height = 19;
     public static final String EMPTY_FIELD = ".";
-
 
     private String mLastError = "";
     private int mLastX = -1, mLastY = -1;
@@ -43,7 +60,6 @@ public class GoBoard {
         return cBoard;
     }
 
-
     public void clearBoard() {
         for(int y = 0; y < height; y++) {
             for(int x = 0; x < width; x++) {
@@ -52,11 +68,6 @@ public class GoBoard {
         }
     }
 
-    /**
-     * Dumps the board to stdout
-     * @param args :
-     * @return :
-     */
     public void dumpBoard() {
         System.out.print("\n\n");
         for(int y = 0; y < height; y++) {
@@ -74,13 +85,7 @@ public class GoBoard {
         }
     }
 
-
     @Override
-    /**
-     * Creates comma separated String with player ids.
-     * @param args :
-     * @return : String with player ids for every cell, or 0 when cell is empty.
-     */
     public String toString() {
         String r = "";
         int counter = 0;
@@ -95,8 +100,6 @@ public class GoBoard {
         }
         return r;
     }
-
-
 
     /**
      * Gets the amount of stones the given player has on the board
@@ -124,9 +127,13 @@ public class GoBoard {
         field[c.x][c.y] = f;
     }
 
-    public int getWidth() { return this.width; }
-    public int getHeight() { return this.height; }
+    public int getWidth() {
+        return this.width;
+    }
 
+    public int getHeight() {
+        return this.height;
+    }
 
     public void initializeFromArray(String[][] array) {
         for (int y = 0; y < this.height; y++) {

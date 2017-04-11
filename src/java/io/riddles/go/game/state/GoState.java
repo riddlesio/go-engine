@@ -54,8 +54,6 @@ public class GoState extends AbstractState<GoPlayerState> implements PlayerBound
         this.playerId = previousState.getPlayerId();
     }
 
-
-
     public GoBoard getBoard() {
         return this.board;
     }
@@ -64,15 +62,28 @@ public class GoState extends AbstractState<GoPlayerState> implements PlayerBound
         this.board = b;
     }
 
-    public void setDoublePass() { this.doublePass = true; }
-    public boolean isDoublePass() { return this.doublePass; }
+    public void setDoublePass() {
+        this.doublePass = true;
+    }
 
-    public int getPlayerId() { return this.playerId; }
+    public boolean isDoublePass() {
+        return this.doublePass;
+    }
+
+    public int getPlayerId() {
+        return this.playerId;
+    }
+
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
     }
 
-    public void setKoPlayerId(int id) { this.koPlayerId = id; }
-    public Integer getKoPlayerId() { return this.koPlayerId; }
+    public void setKoPlayerId(int id) {
+        this.koPlayerId = id;
+    }
+
+    public Integer getKoPlayerId() {
+        return this.koPlayerId;
+    }
 }
 

@@ -17,29 +17,28 @@
  *     file that was distributed with this source code.
  */
 
-package io.riddles.go;
+package io.riddles.go.game.player;
 
-import io.riddles.go.engine.GoEngine;
-import io.riddles.go.game.player.GoPlayer;
-import io.riddles.go.game.state.GoState;
-import io.riddles.javainterface.game.player.PlayerProvider;
-import io.riddles.javainterface.io.IOHandler;
+import io.riddles.javainterface.game.player.AbstractPlayer;
 
 /**
- * io.riddles.go.Go - Created on 2-6-16
+ * io.riddles.catchfrauds.game.player.BookingGameMovePlayer - Created on 3-6-16
  *
  * [description]
  *
- * @author jim
+ * @author Joost de Meij - joost@riddles.io, Jim van Eeden - jim@riddles.io
  */
-public class Go {
+public class GoPlayer extends AbstractPlayer {
 
-    public static void main(String[] args) throws Exception {
-        GoEngine engine;
-        engine = new GoEngine(new PlayerProvider<GoPlayer>(), new IOHandler());
+    public GoPlayer(int id) {
+        super(id);
+    }
 
-        GoState initialState = engine.willRun();
-        GoState finalState = engine.run(initialState);
-        engine.didRun(initialState, finalState);
+    public GoPlayer clone() {
+        return new GoPlayer(this.getId());
+    }
+
+    public String toString() {
+        return "Player " + this.getId();
     }
 }

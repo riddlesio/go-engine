@@ -33,8 +33,7 @@ import io.riddles.javainterface.serialize.Deserializer;
 public class GoMoveDeserializer implements Deserializer<GoMove> {
 
 
-    public GoMoveDeserializer() {
-    }
+    public GoMoveDeserializer() {}
 
     @Override
     public GoMove traverse(String string) {

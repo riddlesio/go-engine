@@ -17,18 +17,28 @@
  *     file that was distributed with this source code.
  */
 
-package io.riddles.go.game.move;
+package io.riddles.go;
+
+import io.riddles.go.engine.GoEngine;
+import io.riddles.go.game.state.GoState;
+import io.riddles.javainterface.game.player.PlayerProvider;
+import io.riddles.javainterface.io.IOHandler;
 
 /**
- * io.riddles.go.game.move.MoveType
+ * io.riddles.go.Go - Created on 2-6-16
  *
- * All move types
+ * [description]
  *
- * @author Jim van Eeden <jim@riddles.io>
+ * @author jim
  */
-public enum MoveType {
-    PLACE,
-    PASS;
+public class Go {
 
-    public String toString() { return this.name().toLowerCase(); }
+    public static void main(String[] args) throws Exception {
+        GoEngine engine;
+        engine = new GoEngine(new PlayerProvider<>(), new IOHandler());
+
+        GoState initialState = engine.willRun();
+        GoState finalState = engine.run(initialState);
+        engine.didRun(initialState, finalState);
+    }
 }

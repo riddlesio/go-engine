@@ -63,8 +63,7 @@ public class GoStateDeserializer extends
         return state;
     }
 
-    private GoState visitState(JSONObject stateJson,
-                               GoState previousState) throws JSONException {
+    private GoState visitState(JSONObject stateJson, GoState previousState) throws JSONException {
         int roundNumber = stateJson.getInt("round");
         return null;
     }

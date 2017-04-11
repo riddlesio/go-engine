@@ -45,26 +45,14 @@ import io.riddles.javainterface.io.IOHandler;
  */
 public class GoEngine extends AbstractEngine<GoProcessor, GoPlayer, GoState> {
 
-
     public GoEngine(PlayerProvider<GoPlayer> playerProvider, IOHandler ioHandler) throws TerminalException {
         super(playerProvider, ioHandler);
-    }
-
-
-    private void setDefaults() {
-
-
-    }
-    protected GoPlayer createPlayer(int id, BotIOInterface ioHandler) {
-        GoPlayer p = new GoPlayer(id);
-        p.setIoHandler(ioHandler);
-        return p;
     }
 
     @Override
     protected Configuration getDefaultConfiguration() {
         Configuration cc = new Configuration();
-        cc.put("maxRounds", 10);
+        cc.put("maxRounds", 250);
         cc.put("fieldWidth", 19);
         cc.put("fieldHeight", 19);
         cc.put("komi", 7.5);
@@ -73,20 +61,17 @@ public class GoEngine extends AbstractEngine<GoProcessor, GoPlayer, GoState> {
 
     @Override
     protected GoProcessor createProcessor() {
-
         return new GoProcessor(playerProvider);
     }
 
     @Override
     protected TurnBasedGameLoop createGameLoop() {
-
         return new TurnBasedGameLoop();
     }
 
     @Override
     protected GoPlayer createPlayer(int id) {
-        GoPlayer player = new GoPlayer(id);
-        return player;
+        return new GoPlayer(id);
     }
 
     @Override
