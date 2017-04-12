@@ -52,7 +52,7 @@ public class GoEngine extends AbstractEngine<GoProcessor, GoPlayer, GoState> {
     @Override
     protected Configuration getDefaultConfiguration() {
         Configuration cc = new Configuration();
-        cc.put("maxRounds", 250);
+        cc.put("maxRounds", 200);
         cc.put("fieldWidth", 19);
         cc.put("fieldHeight", 19);
         cc.put("komi", 7.5);
@@ -91,17 +91,12 @@ public class GoEngine extends AbstractEngine<GoProcessor, GoPlayer, GoState> {
     @Override
     protected GoState getInitialState() {
         ArrayList<GoPlayerState> goPlayerStates = new ArrayList<>();
-        int counter = 0;
 
         for (GoPlayer player : this.playerProvider.getPlayers()) {
             GoPlayerState goPlayerState = new GoPlayerState(player.getId());
-            if (counter > 0) {
-                goPlayerState.setKomi(configuration.getDouble("komi"));
-            }
             goPlayerStates.add(goPlayerState);
-
-            counter++;
         }
+        goPlayerStates.get(goPlayerStates.size() - 1).setKomi(configuration.getDouble("komi"));
 
         GoState state = new GoState(null, goPlayerStates, 0);
         state.setPlayerId(playerProvider.getPlayers().get(0).getId());

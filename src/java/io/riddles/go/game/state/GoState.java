@@ -44,8 +44,9 @@ public class GoState extends AbstractState<GoPlayerState> implements PlayerBound
         if (previousState != null) {
             this.board = previousState.getBoard().clone();
             this.playerId = previousState.getPlayerId();
-        } else
+        } else {
             this.board = new GoBoard(19, 19);
+        }
     }
 
     public GoState(GoState previousState, GoPlayerState goPlayerState, int roundNumber) {

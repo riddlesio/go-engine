@@ -137,13 +137,8 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
 
     @Override
     public boolean hasGameEnded(GoState state) {
-        if (state.getRoundNumber() > AbstractEngine.configuration.getInt("maxRounds")) return true;
-
-        boolean returnVal = false;
-        if (state.isDoublePass()) returnVal = true;
-        if (logic.isBoardFull(state.getBoard())) returnVal = true;
-        if (logic.detectKo(state)) returnVal = true;
-        return returnVal;
+        if (state.getRoundNumber() >= AbstractEngine.configuration.getInt("maxRounds")) return true;
+        return state.isDoublePass() || logic.isBoardFull(state.getBoard()) || logic.detectKo(state);
     }
 
     /* Returns winner playerId, or null if there's no winner. */
@@ -176,7 +171,7 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
 
     @Override
     public double getScore(GoState state) {
-        return state.getRoundNumber() - 1;
+        return state.getRoundNumber();
     }
 
     @Override

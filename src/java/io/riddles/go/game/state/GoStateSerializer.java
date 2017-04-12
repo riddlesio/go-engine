@@ -49,7 +49,7 @@ public class GoStateSerializer extends AbstractStateSerializer<GoState> {
     private JSONObject visitState(GoState state) throws NullPointerException {
         JSONObject stateJSON = new JSONObject();
 
-        stateJSON.put("round", state.getRoundNumber() + 1);
+        stateJSON.put("round", state.getRoundNumber());
         stateJSON.put("field", state.getBoard().toString());
         JSONArray playersJSON = new JSONArray();
         ArrayList<GoPlayerState> players = state.getPlayerStates();

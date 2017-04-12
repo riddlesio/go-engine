@@ -36,7 +36,6 @@ import io.riddles.javainterface.game.AbstractGameSerializer;
  */
 public class GoSerializer extends AbstractGameSerializer<GoProcessor, GoState> {
 
-
     public GoSerializer() {
         super();
     }
@@ -47,16 +46,34 @@ public class GoSerializer extends AbstractGameSerializer<GoProcessor, GoState> {
 
         game = addDefaultJSON(initialState, game, processor);
 
+        JSONObject field = new JSONObject();
+        field.put("width", initialState.getBoard().getWidth());
+        field.put("height", initialState.getBoard().getHeight());
+
+        game.getJSONObject("settings").put("field", field);
+
         // put all states
         GoStateSerializer serializer = new GoStateSerializer();
         JSONArray states = new JSONArray();
 
-        states.put(serializer.traverseToJson(initialState));
+        // DIRTY FIX BECAUSE OF THIS STUPID ASS TurnBasedGameLoop
+        JSONObject initialJsonState = serializer.traverseToJson(initialState);
+        initialJsonState.put("round", initialState.getRoundNumber() - 1);
+        states.put(initialJsonState);
 
         GoState state = initialState;
+        int counter = 0;
         while (state.hasNextState()) {
             state = (GoState) state.getNextState();
-            states.put(serializer.traverseToJson(state));
+            JSONObject jsonState = serializer.traverseToJson(state);
+
+            // DIRTY FIX BECAUSE OF THIS STUPID ASS TurnBasedGameLoop
+            if (counter % 2 == 1) {
+                jsonState.put("round", state.getRoundNumber() - 1);
+            }
+            counter++;
+
+            states.put(jsonState);
         }
 
         game.put("states", states);
