@@ -27,6 +27,8 @@ accessible:
 Use Gradle to build a .jar of the engine. Go to Tasks -> build -> jar.
 The .jar file can be found at `build/libs/`.
 
+*Note: you can also download the pre-built engine jar from the releases tab on the Github repo.*
+
 ## Running
 
 Running is handled by the MatchWrapper. This application handles all communication between
