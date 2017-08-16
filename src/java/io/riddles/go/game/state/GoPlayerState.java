@@ -67,7 +67,7 @@ public class GoPlayerState extends AbstractPlayerState<GoMove> {
     }
 
     public double getScore() {
-        return this.score;
+        return this.score + this.komi;
     }
 
     public double getKomi() {

@@ -13,7 +13,7 @@
       "command": "java -cp /home/jim/workspace/go-starterbot/build/classes/main bot.BotStarter"
     }],
     "engine": {
-      "command": "java -jar /home/jim/workspace/go-engine/build/libs/go-engine-1.0.0.jar"
+      "command": "java -jar /home/jim/workspace/go-engine/build/libs/go-engine-1.0.2.jar"
     }
   }
 }
