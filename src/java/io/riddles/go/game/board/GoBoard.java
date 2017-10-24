@@ -29,14 +29,14 @@ package io.riddles.go.game.board;
  */
 public class GoBoard {
 
-    private final int KO_SEARCH_DEPTH = 30;
-
     protected String[][] field;
     protected int width = 19;
     protected int height = 19;
     public static final String EMPTY_FIELD = ".";
 
-    private String mLastError = "";
+    protected boolean[][] p1SuicidePoints;
+    protected boolean[][] p2SuicidePoints;
+
     private int mLastX = -1, mLastY = -1;
 
 
@@ -44,7 +44,14 @@ public class GoBoard {
         this.width = width;
         this.height = height;
         field = new String[width][height];
-
+        p1SuicidePoints = new boolean[width][height];
+        p2SuicidePoints = new boolean[width][height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                p1SuicidePoints[x][y] = true;
+                p2SuicidePoints[x][y] = true;
+            }
+        }
         clearBoard();
     }
 
@@ -55,6 +62,8 @@ public class GoBoard {
             for (int x = 0; x < width; x++) {
                 Point p = new Point(x, y);
                 cBoard.setFieldAt(p, getFieldAt(p));
+                cBoard.setSuicidePoint(1, p, p1SuicidePoints[x][y]);
+                cBoard.setSuicidePoint(2, p, p2SuicidePoints[x][y]);
             }
         }
         return cBoard;
@@ -66,6 +75,14 @@ public class GoBoard {
                 field[x][y] = EMPTY_FIELD;
             }
         }
+    }
+
+
+    public void setSuicidePoint(int player, Point p, boolean set) {
+        if (player == 1)
+            p1SuicidePoints[p.getX()][p.getY()] = set;
+        else
+            p2SuicidePoints[p.getX()][p.getY()] = set;
     }
 
     public void dumpBoard() {
@@ -91,10 +108,28 @@ public class GoBoard {
         int counter = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (counter > 0) {
-                    r += ",";
-                }
+                if (counter > 0) r += ",";
                 r += field[x][y];
+                counter++;
+            }
+        }
+        return r;
+    }
+
+    /**
+     * Returns board in String format, takes playerId to add suicide fields.
+     * @param playerId : player id
+     * @return : String
+     */
+    public String toString(int playerId) {
+        String r = "";
+        int counter = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (counter > 0) r += ",";
+                if (playerId == 0 && !p1SuicidePoints[x][y]) r += "-1";
+                else if (playerId == 1 && !p2SuicidePoints[x][y]) r += "-1";
+                else r += field[x][y];
                 counter++;
             }
         }
@@ -117,7 +152,6 @@ public class GoBoard {
         }
         return stones;
     }
-
 
     public String getFieldAt(Point c) {
         return field[c.x][c.y];

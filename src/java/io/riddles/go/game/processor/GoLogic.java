@@ -39,11 +39,13 @@ public class GoLogic {
 
 
     public GoLogic() {
-        mAffectedFields = new boolean[256][256]; /* This maximizes the board to 256x256 */
+
+        mAffectedFields = new boolean[256][256];
         mCheckedFields = new boolean[256][256];
     }
 
     public void transform(GoState state, GoPlayerState playerState) throws InvalidInputException {
+
         GoMove move = playerState.getMove();
         if (move.getException() == null) {
             switch(move.getMoveType()) {
@@ -57,6 +59,7 @@ public class GoLogic {
     }
 
     private void transformPlaceMove(GoState state, GoMove move, int playerId) {
+
         GoBoard board = state.getBoard();
         Point point = move.getCoordinate();
 
@@ -76,7 +79,7 @@ public class GoLogic {
         int stonesTaken = checkCaptures(board, playerId);
         move.setStonesTaken(stonesTaken);
 
-        if (!checkSuicideRule(board, point, String.valueOf(playerId))) { /* Check Suicide Rule */
+        if (!checkSuicideRule(board, point)) { /* Check Suicide Rule */
             move.setException(new InvalidMoveException("Illegal Suicide Move"));
         }
 
@@ -86,6 +89,7 @@ public class GoLogic {
     }
 
     public String[][] getBoardArray(GoBoard board) {
+
         String[][] clone = new String[board.getWidth()][board.getHeight()];
         for(int y = 0; y < board.getHeight(); y++)
             for(int x = 0; x < board.getWidth(); x++)
@@ -93,15 +97,8 @@ public class GoLogic {
         return clone;
     }
 
-    private Boolean hasNeighbors(GoBoard board, Point p) {
-        if (p.x > 0 && !board.getFieldAt(new Point(p.x-1, p.y)).equals(GoBoard.EMPTY_FIELD)) return true;
-        if (p.x < board.getWidth() - 1 	&& !board.getFieldAt(new Point(p.x+1, p.y)).equals(GoBoard.EMPTY_FIELD)) return true;
-        if (p.y > 0 			&& !board.getFieldAt(new Point(p.x, p.y-1)).equals(GoBoard.EMPTY_FIELD)) return true;
-        if (p.y < board.getHeight() - 1   && !board.getFieldAt(new Point(p.x, p.y+1)).equals(GoBoard.EMPTY_FIELD)) return true;
-        return false;
-    }
-
     private int checkCaptures(GoBoard board, int playerId) {
+
         int stonesTaken = 0;
         for(int y = 0; y < board.getHeight(); y++) {
             for(int x = 0; x < board.getWidth(); x++) {
@@ -133,25 +130,47 @@ public class GoLogic {
         return stonesTaken;
     }
 
-    private Boolean checkSuicideRule(GoBoard board, Point p, String move) {
-        mFoundLiberties = 0;
-        boolean[][] mark = new boolean[board.getWidth()][board.getHeight()];
-        for (int tx = 0; tx < board.getWidth(); tx++) {
+
+
+    /**
+     * Takes a GoBoard, analyzes and sets the SuicidePoints for both players.
+     * @param board : a GoBoard to update.
+     * @return :
+     */
+    public void updateSuicideData(GoBoard board) {
+        System.out.print("\n");
+
+        Point p = new Point();
             for (int ty = 0; ty < board.getHeight(); ty++) {
-                mAffectedFields[tx][ty] = false;
-                mark[tx][ty] = false;
+                for (int tx = 0; tx < board.getWidth(); tx++) {
+
+                    p.setLocation(tx, ty);
+                if(board.getFieldAt(p).equals(GoBoard.EMPTY_FIELD)) {
+                    board.setSuicidePoint(0, p, checkSuicideRule(board, p));
+                    board.setSuicidePoint(1, p, checkSuicideRule(board, p));
+                }
             }
         }
-        flood(board, mark, p, move, 0);
-        return (mFoundLiberties > 0);
+    }
+
+    /**
+     * Takes a GoBoard, analyzes a suicide situation on given point for given player.
+     * @param board : a GoBoard to update.
+     * @param p : a Point with location to analyse
+     * @return boolean: result where true means open liberties have been found (i.e. no suicide)
+     */
+    private boolean checkSuicideRule(GoBoard board, Point p) {
+
+        return (countLiberties(board, p) > 0);
     }
 
     public boolean isBoardFull(GoBoard board) {
+
         for(int y = 0; y < board.getHeight(); y++)
             for(int x = 0; x < board.getWidth(); x++)
                 for (int playerId = 1; playerId <= 2; playerId++)
                     if (board.getFieldAt(new Point(x,y)).equals(GoBoard.EMPTY_FIELD) &&
-                            checkSuicideRule(board, new Point(x,y), String.valueOf(playerId)))
+                            checkSuicideRule(board, new Point(x,y)))
                         return false;
         // No move can be played
         return true;
@@ -159,6 +178,7 @@ public class GoLogic {
 
     // Returns player score according to Tromp-Taylor Rules
     public int calculateScore(GoBoard board, int playerId) {
+
         int score = this.getPlayerStones(board, playerId);
 
         if (score <= 0) return 0;
@@ -175,6 +195,7 @@ public class GoLogic {
         boolean[][] mark = new boolean[board.getHeight()][board.getWidth()];
         mIsTerritory = false;
         mNrAffectedFields = 0;
+
         for(int y = 0; y < board.getHeight(); y++) {
             for(int x = 0; x < board.getWidth(); x++) {
                 mCheckedFields[x][y] = false;
@@ -184,6 +205,7 @@ public class GoLogic {
         for(int y = 0; y < board.getHeight(); y++) {
             for(int x = 0; x < board.getWidth(); x++) {
                 Point point = new Point(x, y);
+
                 if (board.getFieldAt(point).equals(GoBoard.EMPTY_FIELD) && !mCheckedFields[x][y]) {
                     for (int tx = 0; tx < board.getHeight(); tx++) {
                         for (int ty = 0; ty < board.getWidth(); ty++) {
@@ -214,6 +236,7 @@ public class GoLogic {
     }
 
     public int getPlayerStones(GoBoard board, int value) {
+
         int stones = 0;
         for(int y = 0; y < board.getHeight(); y++) {
             for (int x = 0; x < board.getWidth(); x++) {
@@ -225,7 +248,22 @@ public class GoLogic {
         return stones;
     }
 
+    private int countLiberties(GoBoard board, Point p) {
+
+        int liberties = 0;
+        if (p.getX() > 0)
+            if (board.getFieldAt(new Point(p.getX()-1,p.getY())) == GoBoard.EMPTY_FIELD) liberties++;
+        if (p.getY() > 0)
+            if (board.getFieldAt(new Point(p.getX(),p.getY()-1)) == GoBoard.EMPTY_FIELD) liberties++;
+        if (p.getX() < board.getWidth()-1)
+            if (board.getFieldAt(new Point(p.getX()+1,p.getY())) == GoBoard.EMPTY_FIELD) liberties++;
+        if (p.getY() < board.getHeight()-1)
+            if (board.getFieldAt(new Point(p.getX(),p.getY()+1)) == GoBoard.EMPTY_FIELD) liberties++;
+        return liberties;
+    }
+
     private void flood(GoBoard board, boolean [][]mark, Point p, String srcColor, int stackCounter) {
+
         // Make sure row and col are inside the board
         if (p.x < 0) return;
         if (p.y < 0) return;
@@ -257,6 +295,7 @@ public class GoLogic {
     }
 
     private void floodFindTerritory(GoBoard board, boolean [][]mark, Point p, String srcColor, int stackCounter) {
+
     /* Strategy:
      * If edge other than (playerid or 0 or board edge) has been found, then no territory.
      */
@@ -292,6 +331,7 @@ public class GoLogic {
     }
 
     public boolean detectKo(GoState state) {
+
         String[][] originalBoard = getBoardArray(state.getBoard());
         String[][] middleBoard;
         String[][] compareBoard;

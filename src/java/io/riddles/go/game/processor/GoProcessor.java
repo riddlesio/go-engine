@@ -72,11 +72,15 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
 
         /* Determine double passes */
         int inputPlayerId = input.getPlayerId();
+
         if (move.getMoveType() == MoveType.PASS) {
+
             if (nextState.hasPreviousState()) {
+
                 GoState checkState = nextState;
                 int movesBack = 0;
                 while (checkState.hasPreviousState() && movesBack < 2) {
+
                     checkState = (GoState) checkState.getPreviousState();
                     int checkStatePlayerId = checkState.getPlayerId();
                     if (checkStatePlayerId == inputPlayerId) {
@@ -97,12 +101,16 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
             nextState.setKoPlayerId(input.getPlayerId());
         }
 
+        //nextState.getBoard().updateSuicideData();
+
         /* Update player stats */
         playerState.setStones(nextState.getBoard().getPlayerStones(playerState.getPlayerId()));
         playerState.updateTotalStonesTaken(move.getStonesTaken());
 
         nextPlayerStates.get(0).setScore(logic.calculateScore(nextState.getBoard(), nextPlayerStates.get(0).getPlayerId()));
         nextPlayerStates.get(1).setScore(logic.calculateScore(nextState.getBoard(), nextPlayerStates.get(1).getPlayerId()));
+        logic.updateSuicideData(nextState.getBoard());
+
         nextState.setPlayerstates(nextPlayerStates);
 
         return nextState;
@@ -127,7 +135,7 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
     @Override
     public void sendUpdates(GoState state, GoPlayer player) {
         player.sendUpdate("round", state.getRoundNumber());
-        player.sendUpdate("field", state.getBoard().toString());
+        player.sendUpdate("field", state.getBoard().toString(player.getId()));
 
         for (GoPlayerState playerState : state.getPlayerStates()) {
             GoPlayer otherPlayer = this.playerProvider.getPlayerById(playerState.getPlayerId());

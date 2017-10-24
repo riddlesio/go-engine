@@ -1,0 +1,4 @@
+place_move 5 1
+place_move 5 2
+place_move 5 3
+place_move 2 3

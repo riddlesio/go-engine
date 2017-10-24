@@ -48,15 +48,15 @@ class GoEngineSpec extends Specification {
         }
     }
 
-    //@Ignore
+    @Ignore
     def "test a standard game"() {
         println("test a standard game")
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_input.txt"
-        botInputs[0] = "./src/test/resources/bot1_input.txt"
-        botInputs[1] = "./src/test/resources/bot2_input.txt"
+        def wrapperInput = "./test/resources/wrapper_input.txt"
+        botInputs[0] = "./test/resources/bot1_input.txt"
+        botInputs[1] = "./test/resources/bot2_input.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(0);
@@ -81,14 +81,14 @@ class GoEngineSpec extends Specification {
 
     }
 
-    //@Ignore
+    @Ignore
     def "test the Ko Rule"() {
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_inputshort.txt"
-        botInputs[0] = "./src/test/resources/bot1_input_korule.txt"
-        botInputs[1] = "./src/test/resources/bot2_input_korule.txt"
+        def wrapperInput = "./test/resources/wrapper_inputshort.txt"
+        botInputs[0] = "./test/resources/bot1_input_korule.txt"
+        botInputs[1] = "./test/resources/bot2_input_korule.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(1); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
@@ -108,14 +108,14 @@ class GoEngineSpec extends Specification {
 
     }
 
-    //@Ignore
+    @Ignore
     def "test illegal placement moves"() {
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_inputshort.txt"
-        botInputs[0] = "./src/test/resources/bot1_input_illegal.txt"
-        botInputs[1] = "./src/test/resources/bot2_input_illegal.txt"
+        def wrapperInput = "./test/resources/wrapper_inputshort.txt"
+        botInputs[0] = "./test/resources/bot1_input_illegal.txt"
+        botInputs[1] = "./test/resources/bot2_input_illegal.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(1); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
@@ -138,13 +138,42 @@ class GoEngineSpec extends Specification {
     }
 
     //@Ignore
+    def "test suicide rule"() {
+
+        setup:
+        String[] botInputs = new String[2]
+        def wrapperInput = "./test/resources/wrapper_inputshort.txt"
+        botInputs[0] = "./test/resources/bot1_input_suicide.txt"
+        botInputs[1] = "./test/resources/bot2_input_suicide.txt"
+
+        PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
+        GoPlayer player1 = new GoPlayer(1); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
+        GoPlayer player2 = new GoPlayer(2); player2.setIoHandler(new FileIOHandler(botInputs[1])); playerProvider.add(player2);
+
+        def engine = new TestEngine(playerProvider, wrapperInput)
+
+        AbstractState state = engine.willRun()
+        state = engine.run(state);
+        /* Fast forward to final state */
+        while (state.hasNextState()) state = state.getNextState();
+
+        state.getBoard().dumpBoard();
+        GoProcessor processor = engine.getProcessor();
+
+        expect:
+        state.getBoard().toString() == ".,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.";
+        processor.getWinnerId(state) == 1;
+
+    }
+
+    @Ignore
     def "test double pass moves"() {
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_input.txt"
-        botInputs[0] = "./src/test/resources/bot_doublepass_input.txt"
-        botInputs[1] = "./src/test/resources/bot2_input_illegal.txt"
+        def wrapperInput = "./test/resources/wrapper_input.txt"
+        botInputs[0] = "./test/resources/bot_doublepass_input.txt"
+        botInputs[1] = "./test/resources/bot2_input_illegal.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(1); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
@@ -164,14 +193,14 @@ class GoEngineSpec extends Specification {
         processor.getWinnerId(state) == null;
     }
 
-    //@Ignore
+    @Ignore
     def "test testgame"() {
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_inputshort.txt"
-        botInputs[0] = "./src/test/resources/bot1_input_testgame.txt"
-        botInputs[1] = "./src/test/resources/bot2_input_testgame.txt"
+        def wrapperInput = "./test/resources/wrapper_inputshort.txt"
+        botInputs[0] = "./test/resources/bot1_input_testgame.txt"
+        botInputs[1] = "./test/resources/bot2_input_testgame.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(3); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
@@ -193,14 +222,14 @@ class GoEngineSpec extends Specification {
         processor.getWinnerId(state) == null;
     }
 
-    //@Ignore
+    @Ignore
     def "test JSON"() {
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_inputshort.txt"
-        botInputs[0] = "./src/test/resources/bot1_input_testgame.txt"
-        botInputs[1] = "./src/test/resources/bot2_input_testgame.txt"
+        def wrapperInput = "./test/resources/wrapper_inputshort.txt"
+        botInputs[0] = "./test/resources/bot1_input_testgame.txt"
+        botInputs[1] = "./test/resources/bot2_input_testgame.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(1); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
@@ -216,14 +245,14 @@ class GoEngineSpec extends Specification {
         finalState.getBoard().toString() == ".,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,2,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,1,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,2,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,.,1,.,.,.,.,.,2,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,2,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,2,.,.,.,.,.,.,2,.,.,.,.,.,.,.,.,.,.,.,.,.,.,2,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,1,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.,.";
     }
 
-    //@Ignore
+    @Ignore
     def "test JSON Score"() {
 
         setup:
         String[] botInputs = new String[2]
-        def wrapperInput = "./src/test/resources/wrapper_inputshort.txt"
-        botInputs[0] = "./src/test/resources/bot1_input_score.txt"
-        botInputs[1] = "./src/test/resources/bot2_input_score.txt"
+        def wrapperInput = "./test/resources/wrapper_inputshort.txt"
+        botInputs[0] = "./test/resources/bot1_input_score.txt"
+        botInputs[1] = "./test/resources/bot2_input_score.txt"
 
         PlayerProvider<GoPlayer> playerProvider = new PlayerProvider<>();
         GoPlayer player1 = new GoPlayer(1); player1.setIoHandler(new FileIOHandler(botInputs[0])); playerProvider.add(player1);
