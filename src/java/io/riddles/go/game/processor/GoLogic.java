@@ -138,7 +138,6 @@ public class GoLogic {
      * @return :
      */
     public void updateSuicideData(GoBoard board) {
-        System.out.print("\n");
 
         Point p = new Point();
             for (int ty = 0; ty < board.getHeight(); ty++) {
