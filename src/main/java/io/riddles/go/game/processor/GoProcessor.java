@@ -101,8 +101,6 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
             nextState.setKoPlayerId(input.getPlayerId());
         }
 
-        //nextState.getBoard().updateSuicideData();
-
         /* Update player stats */
         playerState.setStones(nextState.getBoard().getPlayerStones(playerState.getPlayerId()));
         playerState.updateTotalStonesTaken(move.getStonesTaken());
@@ -112,6 +110,10 @@ public class GoProcessor extends PlayerResponseProcessor<GoState, GoPlayer> {
         logic.updateSuicideData(nextState.getBoard());
 
         nextState.setPlayerstates(nextPlayerStates);
+
+        //GoPlayerState tmpP = getActivePlayerState(nextPlayerStates, input.getPlayerId());
+        //if (tmpP.getMove().getException() != null) System.out.println(tmpP.getMove().getException());
+
 
         return nextState;
     }
