@@ -16,16 +16,6 @@ buildscript {
     }
 }
 
-group 'io.riddles'
-apply plugin: 'groovy'
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: "com.jfrog.artifactory"
-
-sourceCompatibility = 1.8
-version = '1.0.2'
-
->>>>>>> a84b589c9f68eb66a182bc78eaecb3a281e25733
 artifactory {
     resolve {
         contextUrl = 'http://artifactory.dev.riddles.io/artifactory'
