@@ -183,6 +183,8 @@ public class GoLogic {
 
         if (score <= 0) return 0;
 
+        /* Attention! This restricts to use only player ids 0 and 1!
+           Maybe a way to figure out other player id is needed */
         if (this.getPlayerStones(board, 2 - (playerId + 1)) == 0) { // opponent stones == 0
             if (score <= 1) {
                 return score;
